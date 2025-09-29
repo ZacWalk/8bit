@@ -99,6 +99,8 @@
     }
 
     function interceptLinks() {
+        // If opened directly from filesystem, skip SPA to avoid fetch(file://) CORS issues
+        if (location.protocol === 'file:') return;
         document.addEventListener('click', e => {
             const a = e.target.closest('a');
             if (!a) return;
@@ -106,14 +108,14 @@
             if (!href) return;
             if (/^(chapter\d+|appendices)\.html$/i.test(href) || href === 'index.html') {
                 e.preventDefault();
-                loadChapter(href);
+                loadChapter(href, { fallbackNavigate: true });
             }
         });
     }
 
     const cache = new Map();
 
-    async function loadChapter(file) {
+    async function loadChapter(file, opts={}) {
         const content = document.getElementById(CONTENT_ID);
         if (!content) return;
         if (cache.has(file)) {
@@ -138,7 +140,12 @@
             enhanceCodeBlocks(content);
             window.history.pushState({file}, '', '#' + file.replace('.html',''));
         } catch (err) {
-            content.innerHTML = '<p style="color:red">Failed to load chapter: '+file+'</p>';
+            if (opts.fallbackNavigate) {
+                // As a fallback (e.g., file:// or blocked fetch), perform normal navigation
+                window.location.href = file;
+            } else {
+                content.innerHTML = '<p style="color:red">Failed to load chapter: '+file+'</p>';
+            }
         }
     }
 
@@ -159,5 +166,9 @@
         interceptLinks();
         enhanceCodeBlocks();
         restoreFromHash();
+
+        if (location.protocol === 'file:') {
+            console.info('[C64 Guide] Running from file://; SPA chapter loading disabled. For persistent emulator across chapters, serve via a local HTTP server (e.g., "npx serve" or "python -m http.server").');
+        }
     });
 })();
