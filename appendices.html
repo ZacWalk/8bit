@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendices - Commodore 64 User's Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="c64-roms.js"></script>
+    <script defer src="c64.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="c64-dark-blue text-white p-6">
+        <div class="container mx-auto">
+            <a href="index.html" class="text-white hover:underline">&larr; Back to Index</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-8 max-w-4xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold mb-6 c64-blue">Appendices</h1>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">Introduction</h2>
+            <p class="mb-4">Now that you've become more intimately involved with your Commodore 64, we want you to know that our customer support does not stop here. You may not know it, but Commodore has been in business for over 23 years. In the 1970's we introduced the first self-contained personal computer (the PET). We have since become the leading computer company in many countries of the world. Our ability to design and manufacture our own computer chips allows us to bring you new and better personal computers at prices way below what you'd expect for this level of technical excellence.</p>
+            <p class="mb-4">The following APPENDICES contain charts, tables, and other information which help you program your Commodore 64 faster and more efficiently. They also include important information on the wide variety of Commodore products you may be interested in, and a bibliography listing of over 20 books and magazines which can help you develop your programming skills and keep you current on the latest information concerning your computer and peripherals.</p>
+
+            <h2 id="appendix-a" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix A: COMMODORE 64 ACCESSORIES AND SOFTWARE</h2>
+            <h3 class="text-xl font-bold mt-6 mb-4">ACCESSORIES</h3>
+            <p class="mb-4">The Commodore 64 will support Commodore VIC 20 storage devices and accessories—DATASSETTE recorder, disk drive, modem, printer — so your system can expand to keep pace with changing needs.</p>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Datasette Recorder</strong>—This low cost tape unit enables programs and data to be stored on cassette tape, and played back at a later time.</li>
+                <li><strong>Disk</strong>—The single disk unit uses standard 5¼-inch floppy diskettes... to store programs and data. Disks allow faster access to data and hold up to 170,000 characters of information each.</li>
+                <li><strong>Modem</strong>—A low-cost communication device, the VICMODEM allows access to other computers over ordinary telephone lines.</li>
+                <li><strong>Printer</strong>—The VIC printer produces printed copies of programs, data, or graphics.</li>
+                <li><strong>Interface Cartridges</strong>—A number of specialized cartridges will be available for the Commodore 64 to allow various standard devices such as modems, printers, controllers, and instruments to be attached to the system.</li>
+            </ul>
+            <h3 class="text-xl font-bold mt-6 mb-4">SOFTWARE</h3>
+             <h4 class="text-lg font-bold mt-4 mb-2">BUSINESS AIDS</h4>
+             <ul class="list-disc list-inside space-y-2 mb-4">
+                <li>An Electronic Spreadsheet package will allow you to plan budgets, and perform "what if?" analysis.</li>
+                <li>Financial planning, such as loan amortization, will be easily handled with the Financial Planning Package.</li>
+                <li>Easy-to-use Data Base programs will allow you to keep track of information... mailing lists... phone lists... inventories... and organize information in a useful form.</li>
+                <li>Professional Word Processing programs will turn the Commodore 64 into a full-featured word processor.</li>
+            </ul>
+             <h4 class="text-lg font-bold mt-4 mb-2">ENTERTAINMENT</h4>
+             <p>The highest quality games will be available on plug-in cartridges for the Commodore 64, providing hours of enjoyment.</p>
+             <h4 class="text-lg font-bold mt-4 mb-2">EDUCATION</h4>
+             <p>The Commodore 64 is a tutor that never tires and always gives personal attention. Besides access to much of the vast PET educational programs, additional educational languages that will be available for the Commodore 64 include PILOT, LOGO and other key advanced packages.</p>
+
+            <h2 id="appendix-b" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix B: ADVANCED CASSETTE OPERATION</h2>
+            <p class="mb-4">Besides saving copies of your programs on tape, the Commodore 64 can also store the values of variables and other items of data, in a group called a FILE. Statements used with data files are OPEN, CLOSE, PRINT#, INPUT#, and GET#. The system variable ST (status) is used to check for tape markers.</p>
+            <p class="mb-4">The following program illustrates how this works:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>10 PRINT "WRITE-TO-TAPE-PROGRAM"
+20 OPEN 1,1,1,"DATA FILE"
+30 PRINT "TYPE DATA TO BE STORED OR TYPE STOP"
+50 PRINT
+60 INPUT "DATA";A$
+70 PRINT #1, A$
+80 IF A$ <> "STOP" THEN 50
+90 PRINT
+100 PRINT "CLOSING FILE"
+110 CLOSE 1</code></pre>
+
+            <h2 id="appendix-c" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix C: COMMODORE 64 BASIC</h2>
+            <h3 class="text-xl font-bold mt-6 mb-4">VARIABLES</h3>
+            <p class="mb-4">Real Variable Names: A, A5, BZ</p>
+            <p class="mb-4">Integer Variable Names: A%, A5%, BZ%</p>
+            <p class="mb-4">String Variable Names: A$, A5$, BZ$</p>
+            <h3 class="text-xl font-bold mt-6 mb-4">OPERATORS</h3>
+            <p class="mb-4">The arithmetic operators include: + (Addition), - (Subtraction), * (Multiplication), / (Division), ↑ (Exponentiation).</p>
+            <h3 class="text-xl font-bold mt-6 mb-4">COMMANDS</h3>
+            <p class="mb-4"><strong>CONT</strong>: Restarts a program that has been stopped.</p>
+            <p class="mb-4"><strong>LIST</strong>: Displays the program currently in memory.</p>
+            <p class="mb-4"><strong>LOAD</strong>: Transfers a program from tape or disk into memory.</p>
+            <p class="mb-4"><strong>NEW</strong>: Erases the program and all variables from memory.</p>
+            <p class="mb-4"><strong>RUN</strong>: Executes a program.</p>
+            <p class="mb-4"><strong>SAVE</strong>: Stores the current program to tape or disk.</p>
+            <p class="mb-4"><strong>VERIFY</strong>: Checks that a saved program is identical to the one in memory.</p>
+            <h3 class="text-xl font-bold mt-6 mb-4">STATEMENTS</h3>
+            <p class="mb-4">A complete list of BASIC statements like CLOSE, DATA, DIM, FOR...NEXT, GOTO, GOSUB, IF...THEN, INPUT, POKE, PRINT, and READ are detailed in the manual.</p>
+            <h3 class="text-xl font-bold mt-6 mb-4">FUNCTIONS</h3>
+            <p class="mb-4">Numeric Functions (ABS, COS, INT, LOG, PEEK, RND, SQR, etc.) and String Functions (ASC, CHR$, LEFT$, LEN, MID$, RIGHT$, etc.) are available.</p>
+            
+            <h2 id="appendix-d" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix D: ABBREVIATIONS FOR BASIC KEYWORDS</h2>
+            <p class="mb-4">A time-saving feature of Commodore 64 BASIC is the ability to abbreviate keywords. For example, a question mark (?) can be used for PRINT. Other commands are abbreviated by typing the first one or two letters, followed by the SHIFTed next letter.</p>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead class="c64-light-blue">
+                        <tr>
+                            <th class="py-2 px-4 border-b">Command</th>
+                            <th class="py-2 px-4 border-b">Abbreviation</th>
+                            <th class="py-2 px-4 border-b">Command</th>
+                            <th class="py-2 px-4 border-b">Abbreviation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="border-b py-2 px-4">ABS</td><td class="border-b py-2 px-4">A SHIFT+B</td><td class="border-b py-2 px-4">RIGHT$</td><td class="border-b py-2 px-4">R SHIFT+I</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">AND</td><td class="border-b py-2 px-4">A SHIFT+N</td><td class="border-b py-2 px-4">RND</td><td class="border-b py-2 px-4">R SHIFT+N</td></tr>
+                        <tr><td class="border-b py-2 px-4">ASC</td><td class="border-b py-2 px-4">A SHIFT+S</td><td class="border-b py-2 px-4">RUN</td><td class="border-b py-2 px-4">R SHIFT+U</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">ATN</td><td class="border-b py-2 px-4">A SHIFT+T</td><td class="border-b py-2 px-4">SAVE</td><td class="border-b py-2 px-4">S SHIFT+A</td></tr>
+                        <tr><td class="border-b py-2 px-4">CHR$</td><td class="border-b py-2 px-4">C SHIFT+H</td><td class="border-b py-2 px-4">SGN</td><td class="border-b py-2 px-4">S SHIFT+G</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">CLOSE</td><td class="border-b py-2 px-4">CL SHIFT+O</td><td class="border-b py-2 px-4">SIN</td><td class="border-b py-2 px-4">S SHIFT+I</td></tr>
+                        <tr><td class="border-b py-2 px-4">CLR</td><td class="border-b py-2 px-4">C SHIFT+L</td><td class="border-b py-2 px-4">SPC(</td><td class="border-b py-2 px-4">S SHIFT+P</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">CMD</td><td class="border-b py-2 px-4">C SHIFT+M</td><td class="border-b py-2 px-4">SQR</td><td class="border-b py-2 px-4">S SHIFT+Q</td></tr>
+                        <tr><td class="border-b py-2 px-4">CONT</td><td class="border-b py-2 px-4">C SHIFT+O</td><td class="border-b py-2 px-4">STEP</td><td class="border-b py-2 px-4">ST SHIFT+E</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">DATA</td><td class="border-b py-2 px-4">D SHIFT+A</td><td class="border-b py-2 px-4">STOP</td><td class="border-b py-2 px-4">S SHIFT+T</td></tr>
+                        <tr><td class="border-b py-2 px-4">DEF</td><td class="border-b py-2 px-4">D SHIFT+E</td><td class="border-b py-2 px-4">STR$</td><td class="border-b py-2 px-4">ST SHIFT+R</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">DIM</td><td class="border-b py-2 px-4">D SHIFT+I</td><td class="border-b py-2 px-4">SYS</td><td class="border-b py-2 px-4">S SHIFT+Y</td></tr>
+                        <tr><td class="border-b py-2 px-4">END</td><td class="border-b py-2 px-4">E SHIFT+N</td><td class="border-b py-2 px-4">TAB(</td><td class="border-b py-2 px-4">T SHIFT+A</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">EXP</td><td class="border-b py-2 px-4">E SHIFT+X</td><td class="border-b py-2 px-4">THEN</td><td class="border-b py-2 px-4">T SHIFT+H</td></tr>
+                        <tr><td class="border-b py-2 px-4">FOR</td><td class="border-b py-2 px-4">F SHIFT+O</td><td class="border-b py-2 px-4">USR</td><td class="border-b py-2 px-4">U SHIFT+S</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">FRE</td><td class="border-b py-2 px-4">F SHIFT+R</td><td class="border-b py-2 px-4">VAL</td><td class="border-b py-2 px-4">V SHIFT+A</td></tr>
+                        <tr><td class="border-b py-2 px-4">GET</td><td class="border-b py-2 px-4">G SHIFT+E</td><td class="border-b py-2 px-4">VERIFY</td><td class="border-b py-2 px-4">V SHIFT+E</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">GOSUB</td><td class="border-b py-2 px-4">GO SHIFT+S</td><td class="border-b py-2 px-4">WAIT</td><td class="border-b py-2 px-4">W SHIFT+A</td></tr>
+                        <tr><td class="border-b py-2 px-4">GOTO</td><td class="border-b py-2 px-4">G SHIFT+O</td><td class="border-b py-2 px-4"></td><td class="border-b py-2 px-4"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="appendix-e" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix E: SCREEN DISPLAY CODES</h2>
+            <p class="mb-4">This section contains charts listing all characters in the two character sets, and the POKE values needed to display them on screen. The sets are switched by holding the C= and SHIFT keys simultaneously. From BASIC, <code>POKE 53272,21</code> will switch to upper case mode and <code>POKE 53272,23</code> switches to lower case.</p>
+
+            <h2 id="appendix-f" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix F: ASCII AND CHR$ CODES</h2>
+            <p class="mb-4">A chart showing the character that appears for each CHR$(X) code from 0 to 255.</p>
+            
+            <h2 id="appendix-g" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix G: SCREEN AND COLOR MEMORY MAPS</h2>
+            <p class="mb-4">These charts list which memory locations control placing characters on the screen (1024-2023), and the locations used to change individual character colors (55296-56295).</p>
+            <h3 class="text-xl font-bold mt-6 mb-4">Color Codes</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead class="c64-light-blue">
+                        <tr>
+                            <th class="py-2 px-4 border-b">Value</th><th class="py-2 px-4 border-b">Color</th>
+                            <th class="py-2 px-4 border-b">Value</th><th class="py-2 px-4 border-b">Color</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="border-b py-2 px-4">0</td><td class="border-b py-2 px-4">BLACK</td><td class="border-b py-2 px-4">8</td><td class="border-b py-2 px-4">ORANGE</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">1</td><td class="border-b py-2 px-4">WHITE</td><td class="border-b py-2 px-4">9</td><td class="border-b py-2 px-4">BROWN</td></tr>
+                        <tr><td class="border-b py-2 px-4">2</td><td class="border-b py-2 px-4">RED</td><td class="border-b py-2 px-4">10</td><td class="border-b py-2 px-4">Light RED</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">3</td><td class="border-b py-2 px-4">CYAN</td><td class="border-b py-2 px-4">11</td><td class="border-b py-2 px-4">GRAY 1</td></tr>
+                        <tr><td class="border-b py-2 px-4">4</td><td class="border-b py-2 px-4">PURPLE</td><td class="border-b py-2 px-4">12</td><td class="border-b py-2 px-4">GRAY 2</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">5</td><td class="border-b py-2 px-4">GREEN</td><td class="border-b py-2 px-4">13</td><td class="border-b py-2 px-4">Light GREEN</td></tr>
+                        <tr><td class="border-b py-2 px-4">6</td><td class="border-b py-2 px-4">BLUE</td><td class="border-b py-2 px-4">14</td><td class="border-b py-2 px-4">Light BLUE</td></tr>
+                        <tr class="bg-gray-50"><td class="border-b py-2 px-4">7</td><td class="border-b py-2 px-4">YELLOW</td><td class="border-b py-2 px-4">15</td><td class="border-b py-2 px-4">GRAY 3</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="appendix-h" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix H: DERIVING MATHEMATICAL FUNCTIONS</h2>
+            <p class="mb-4">Provides the BASIC equivalents for mathematical functions not built into the Commodore 64.</p>
+            <div class="overflow-x-auto"><table class="min-w-full bg-white border border-gray-300">
+                <thead class="c64-light-blue"><tr><th class="py-2 px-4 border-b">Function</th><th class="py-2 px-4 border-b">BASIC Equivalent</th></tr></thead>
+                <tbody>
+                    <tr><td class="border-b py-2 px-4">SECANT</td><td class="border-b py-2 px-4 font-mono">SEC(X)=1/COS(X)</td></tr>
+                    <tr class="bg-gray-50"><td class="border-b py-2 px-4">COSECANT</td><td class="border-b py-2 px-4 font-mono">CSC(X)=1/SIN(X)</td></tr>
+                    <tr><td class="border-b py-2 px-4">COTANGENT</td><td class="border-b py-2 px-4 font-mono">COT(X)=1/TAN(X)</td></tr>
+                    <tr class="bg-gray-50"><td class="border-b py-2 px-4">INVERSE SINE</td><td class="border-b py-2 px-4 font-mono">ARCSIN(X)=ATN(X/SQR(-X*X+1))</td></tr>
+                    <tr><td class="border-b py-2 px-4">INVERSE COSINE</td><td class="border-b py-2 px-4 font-mono">ARCCOS(X)=-ATN(X/SQR(-X*X+1))+π/2</td></tr>
+                </tbody>
+            </table></div>
+            
+            <h2 id="appendix-i" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix I: PINOUTS FOR INPUT/OUTPUT DEVICES</h2>
+            <p class="mb-4">Diagrams and tables showing the pin configurations for the Game I/O, Cartridge Slot, Audio/Video, Serial I/O, Cassette, and User Port.</p>
+
+            <h2 id="appendix-j" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix J: PROGRAMS TO TRY</h2>
+            <p class="mb-4">Includes listings for several useful and entertaining programs, such as "Jotto" and a piano keyboard simulator.</p>
+
+            <h2 id="appendix-k" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix K: CONVERTING STANDARD BASIC PROGRAMS TO COMMODORE 64 BASIC</h2>
+            <p class="mb-4">Provides hints for converting programs written in other BASIC dialects, covering differences in string dimensions, string concatenation, and multiple statements on a line.</p>
+
+            <h2 id="appendix-l" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix L: ERROR MESSAGES</h2>
+            <p class="mb-4">A complete list of error messages (e.g., ?SYNTAX ERROR, ?OUT OF DATA ERROR) and their causes.</p>
+
+            <h2 id="appendix-m" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix M: MUSIC NOTE VALUES</h2>
+            <p class="mb-4">A complete list of notes and the values to be POKEd into the HI FREQ and LOW FREQ registers of the sound chip to produce them.</p>
+            <div class="overflow-x-auto"><table class="min-w-full bg-white border border-gray-300">
+                <thead class="c64-light-blue"><tr><th class="py-2 px-4 border-b">Note</th><th class="py-2 px-4 border-b">Octave</th><th class="py-2 px-4 border-b">Decimal</th><th class="py-2 px-4 border-b">HI FREQ</th><th class="py-2 px-4 border-b">LOW FREQ</th></tr></thead>
+                <tbody>
+                    <tr><td class="border-b py-2 px-4">C</td><td class="border-b py-2 px-4">0</td><td class="border-b py-2 px-4">268</td><td class="border-b py-2 px-4">1</td><td class="border-b py-2 px-4">12</td></tr>
+                    <tr class="bg-gray-50"><td class="border-b py-2 px-4">C#</td><td class="border-b py-2 px-4">0</td><td class="border-b py-2 px-4">284</td><td class="border-b py-2 px-4">1</td><td class="border-b py-2 px-4">28</td></tr>
+                    <tr><td class="border-b py-2 px-4">D</td><td class="border-b py-2 px-4">0</td><td class="border-b py-2 px-4">301</td><td class="border-b py-2 px-4">1</td><td class="border-b py-2 px-4">45</td></tr>
+                    <tr class="bg-gray-50"><td class="border-b py-2 px-4">...</td><td class="border-b py-2 px-4">...</td><td class="border-b py-2 px-4">...</td><td class="border-b py-2 px-4">...</td><td class="border-b py-2 px-4">...</td></tr>
+                    <tr><td class="border-b py-2 px-4">C</td><td class="border-b py-2 px-4">4</td><td class="border-b py-2 px-4">4291</td><td class="border-b py-2 px-4">16</td><td class="border-b py-2 px-4">195</td></tr>
+                    <tr class="bg-gray-50"><td class="border-b py-2 px-4">C#</td><td class="border-b py-2 px-4">4</td><td class="border-b py-2 px-4">4547</td><td class="border-b py-2 px-4">17</td><td class="border-b py-2 px-4">195</td></tr>
+                </tbody>
+            </table></div>
+
+            <h2 id="appendix-n" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix N: BIBLIOGRAPHY</h2>
+            <p class="mb-4">A list of books and magazines to help you develop your programming skills.</p>
+
+            <h2 id="appendix-o" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix O: SPRITE REGISTER MAP</h2>
+            <p class="mb-4">A detailed map of the registers used to control sprites, including coordinates, enabling, expansion, priority, and color.</p>
+            
+            <h2 id="appendix-p" class="text-2xl font-bold mt-8 mb-4 c64-blue">Appendix P: COMMODORE 64 SOUND CONTROL SETTINGS</h2>
+            <p class="mb-4">A handy table giving the key POKE numbers needed for sound programs, covering all three voices.</p>
+
+        </div>
+    </div>
+</body>
+</html>
+

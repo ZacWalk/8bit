@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C64 Emulator</title>
+    <style>
+        body { margin:0; padding:20px; background:#222; font-family:monospace; display:flex; flex-direction:column; align-items:center; }
+        h1 { color:#fff; margin-bottom:20px; }
+        #screen { background:#4040b0; border:0px solid #6060c0; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.5); image-rendering:pixelated; image-rendering:-moz-crisp-edges; image-rendering:crisp-edges; }
+        .controls { margin-top:20px; color:#fff; }
+        .info { margin-top:10px; color:#ccc; font-size:12px; text-align:center; max-width:960px; }
+        button { background:#444; color:#fff; border:1px solid #666; padding:5px 10px; margin:5px; cursor:pointer; border-radius:3px; }
+        button:hover { background:#555; }
+    </style>
+</head>
+<body>
+<h1>Commodore 64 Emulator</h1>
+<canvas id="screen" width="320" height="200"></canvas>
+<div class="controls">
+    <button onclick="emulator.reset()">RESET</button>
+    <button onclick="emulator.typeText('LOAD\n')">LOAD</button>
+    <button onclick="emulator.typeText('RUN\n')">RUN</button>
+    <button onclick="emulator.typeText('LIST\n')">LIST</button>
+    <button onclick="emulator.typeText('NEW\n')">NEW</button>
+</div>
+<div class="info">
+    <p>Use your keyboard to type commands. Runs original C64 BASIC/KERNAL ROMs.</p>
+    <p>Try: <strong>PRINT "HELLO WORLD"</strong> then Enter.</p>
+    <p>Or: <strong>10 PRINT "COMMODORE 64" : GOTO 10</strong> then <strong>RUN</strong>.</p>
+
+</div>
+<script src="c64-roms.js"></script>
+<script src="c64.js"></script>
+<script>
+const emulator = new C64Emulator('screen');
+emulator.start();
+
+document.addEventListener('keydown', e=> emulator.handleKeyPress(e));
+window.addEventListener('load', ()=>{ document.body.tabIndex=0; document.body.focus(); });
+</script>
+</body>
+</html>

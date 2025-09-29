@@ -1,0 +1,158 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.c64-blue {
+    color: #3571a5;
+}
+
+.c64-light-blue {
+    color: #70a4d8;
+}
+
+.c64-dark-blue {
+    background-color: #352879;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #e0e0e0;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.appendix-section {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 2px solid #ddd;
+}
+
+/* Persistent C64 layout */
+body.has-c64-layout {
+    margin: 0;
+    overflow: hidden;
+}
+#c64-emulator-pane {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 50vw;
+    height: 100vh;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 10px 20px;
+    box-sizing: border-box;
+    border-right: 4px solid #352879;
+    z-index: 1000;
+    color: #eee;
+    font-family: monospace;
+}
+#c64-emulator-pane h1 {
+    font-size: 16px;
+    margin: 4px 0 8px;
+    letter-spacing: 1px;
+}
+#c64-emulator-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+#c64-screen {
+    background: #4040b0;
+    border-radius: 8px;
+    image-rendering: pixelated;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 384 / 272;
+    box-shadow: 0 0 20px rgba(0,0,0,0.7);
+}
+.c64-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+    justify-content: center;
+}
+.c64-controls button, .run-c64-btn {
+    background: #352879;
+    color: #fff;
+    border: 1px solid #5740a5;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+}
+.c64-controls button:hover, .run-c64-btn:hover {
+    background: #47349c;
+}
+.c64-controls button:active, .run-c64-btn:active {
+    transform: translateY(1px);
+}
+#c64-content-pane {
+    position: absolute;
+    left: 50vw;
+    top: 0;
+    width: 50vw;
+    height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background: #f5f7fa;
+}
+#c64-dynamic-content {
+    padding: 20px 4vw 60px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.c64-run-wrapper { position: relative; }
+.run-c64-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 11px;
+    padding: 4px 8px;
+    background: #3571a5;
+    border-color: #2a567b;
+}
+.run-c64-btn:hover { background: #468bc7; }
+.run-c64-btn:active { background:#285477; }
+.c64-inline-note { font-size: 11px; opacity:.8; margin-top:4px; }
+
+@media (max-width: 1100px) {
+    #c64-emulator-pane { width: 100vw; height: 46vh; position: fixed; border-right: none; border-bottom:4px solid #352879; }
+    #c64-content-pane { left: 0; top: 46vh; width: 100vw; height: 54vh; }
+}
+
+

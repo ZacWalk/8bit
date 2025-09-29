@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7: Creating Sound - Commodore 64 User's Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="c64-roms.js"></script>
+    <script defer src="c64.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="c64-dark-blue text-white p-6">
+        <div class="container mx-auto">
+            <a href="index.html" class="text-white hover:underline">&larr; Back to Index</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-8 max-w-4xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold mb-6 c64-blue">Chapter 7: Creating Sound</h1>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">USING SOUND IF YOU'RE NOT A COMPUTER "PROGRAMMER"</h2>
+            <p class="mb-4">Most programmers use computer sound for two purposes: making music and generating sound effects. Before getting into the "intricacies" of programming sound, let's take a quick look at how a typical sound program is structured... and give you a short sound program you can experiment with.</p>
+
+            <h3 class="text-xl font-bold mt-6 mb-4 c64-blue">STRUCTURE OF A SOUND PROGRAM</h3>
+            <p class="mb-4">To begin with, there are five settings which you should know in order to generate sound on your COMMODORE 64: VOLUME, ATTACK/DECAY, SUSTAIN/RELEASE (ADSR), WAVEFORM CONTROL and HIGH FREQUENCY/LOW FREQUENCY. The first three settings are usually set ONCE at the beginning of your program. The high and low frequency settings must be set for EACH NOTE you play. The waveform control starts and stops each note.</p>
+
+            <h3 class="text-xl font-bold mt-6 mb-4 c64-blue">SAMPLE SOUND PROGRAM</h3>
+            <p class="mb-4">Before you start you have to choose a VOICE. There are 3 voices. Each voice requires different sound setting numbers for Waveform, etc. You can play 1, 2 or 3 voices together but our sample uses only VOICE NUMBER 1. Type in this program line by line... be sure to hit the RETURN key after each line:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>5 FOR L=54272 TO 54296:POKEL,0:NEXT
+10 POKE 54296,15
+20 POKE 54277,190
+30 POKE 54278,248
+40 POKE 54273,17:POKE 54272,37
+50 POKE 54276,17
+60 FOR T=1 TO 250:NEXT
+70 POKE 54276,16</code></pre>
+            <p class="mb-4">To hear the note you just created, type the word RUN and then hit the RETURN key. To view the program type the word LIST and hit RETURN. To change it, retype the lines you want to alter.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">MAKING MUSIC ON YOUR COMMODORE 64</h2>
+            <p class="mb-4">You don't have to be a musician to make music on your COMMODORE 64! All you need to know are a few simple numbers which tell your computer how loud to set the volume, which notes to play, how long to play them, etc. But first here's a program which gives you a quick demonstration of the COMMODORE 64's incredible music capabilities, using only ONE of your computer's 3 separate voices.</p>
+            <p class="mb-4">Type the word NEW and hit RETURN to erase your previous program, then enter this program, type the word RUN and hit the RETURN key.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>5 REM MUSICAL SCALE
+7 FOR L=54272 TO 54296:POKEL,0:NEXT
+10 POKE 54296,15
+20 POKE 54277,9
+30 POKE 54278,248
+40 FOR T=1 TO 300:NEXT
+50 READ A
+60 READ B
+70 IF B=-1 THEN END
+80 POKE 54273,A:POKE 54272,B
+85 POKE 54276,17
+90 FOR T=1 TO 250:NEXT:POKE 54276,16
+95 FOR T=1 TO 50:NEXT
+100 GOTO 20
+110 DATA 17,37,19,63,21,154,22,227
+120 DATA 25,177,28,214,32,94,34,75
+900 DATA -1,-1</code></pre>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">IMPORTANT SOUND SETTINGS</h2>
+            <ol class="list-decimal list-inside space-y-4">
+                <li><strong>VOLUME</strong>—To turn on the volume and set it to the highest level, type: <code>POKE 54296,15</code>. The volume setting ranges from 0 to 15 but you'll use 15 most of the time. You only have to set the volume ONCE at the beginning of your program.</li>
+                <li><strong>ADSR and WAVEFORM CONTROL SETTING</strong>—Each VOICE has its own WAVEFORM CONTROL SETTING which lets you define four different types of waveforms: Triangle, Sawtooth, Pulse (Square) and Noise. The CONTROL also activates the COMMODORE 64's ADSR feature.</li>
+                <li><strong>ATTACK/DECAY SETTING</strong>—"Attack" is the rate at which a note/sound arises to its MAXIMUM VOLUME. The DECAY is the rate at which the note/sound falls from its highest volume level back to the SUSTAIN level. YOU MUST COMBINE ATTACK AND DECAY SETTINGS BY ADDING THEM UP AND ENTERING THE TOTAL.</li>
+                <li><strong>SUSTAIN/RELEASE SETTING</strong>—SUSTAIN/RELEASE lets you "extend" (SUSTAIN) a portion of a particular sound, like the "sustain pedal" on a piano. Any note or sound can be sustained at any one of 16 levels.</li>
+                <li><strong>CHOOSING VOICES AND SETTING HIGH/LOW FREQUENCY SOUND VALUES</strong>—Each individual note on the Commodore 64 requires TWO SEPARATE POKE COMMANDS—one for HIGH FREQUENCY and one for LOW FREQUENCY. The MUSICAL NOTE VALUE table in Appendix M shows you the corresponding POKEs you need to play any note.</li>
+            </ol>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">PLAYING A SONG ON THE COMMODORE 64</h2>
+            <p class="mb-4">The following program can be used to compose or play a song (using VOICE1). The program is set up to let you enter 3 numbers for each note: the HIGH FREQUENCY NOTE VALUE, the LOW FREQUENCY NOTE VALUE, and the DURATION THE NOTE WILL BE PLAYED.</p>
+            <p class="mb-4">Type the word NEW to erase your previous program and type in the following program, then type RUN to hear the song.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>2 FOR L=54272 TO 54296:POKEL,0:NEXT
+5 V=54296:W=54276:A=54277:HF=54273:LF=54272:S=54278:PH=54275:PL=54274
+10 POKEV,15:POKEA,88:POKEPH,15:POKEPL,15:POKES,89
+20 READ H:IF H=-1 THEN END
+30 READ L
+40 READ D
+60 POKEHF,H:POKELF,L:POKEW,65
+80 FOR T=1 TO D:NEXT:POKEW,64
+85 FOR T=1 TO 50:NEXT
+90 GOTO 10
+100 DATA 34,75,250,43,52,250,51,97,375,43,52,125,51,97
+105 DATA 250,57,172,250
+110 DATA 51,97,500,0,0,125,43,52,250,51,97,250,57,172
+115 DATA 1000,51,97,500
+120 DATA -1,-1,-1</code></pre>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">CREATING SOUND EFFECTS</h2>
+            <p class="mb-4">Unlike music, sound effects are more often tied to a specific programming "action" such as the explosion made by an astro-fighter as it crashes through a barrier in a space game or the warning buzzer in a business program that tells the user he's about to erase his disk by mistake.</p>
+            <p class="mb-4">You have a wide range of options available if you want to create different sound effects. Here are some programming ideas which might help you get started experimenting with sound effects.</p>
+            
+            <h3 class="text-xl font-bold mt-6 mb-4 c64-blue">SAMPLE SOUND EFFECTS TO TRY</h3>
+            <p class="mb-4">The following programs may be added to almost any BASIC program. They are included to give you some programming ideas and demonstrate the Commodore 64's sound effect range.</p>
+            <h4 class="text-lg font-bold mt-4 mb-2">DOLL CRYING</h4>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>10 V=54296:W=54276:A=54277:H=54273:L=54272
+20 POKEV,15:POKEW,65:POKEA,15
+30 FOR X=200 TO 5 STEP -2:POKEH,40:POKEL,X:NEXT
+40 FOR X=150 TO 5 STEP -2:POKEH,40:POKEL,X:NEXT
+50 POKEW,0</code></pre>
+            <h4 class="text-lg font-bold mt-4 mb-2">SHOOTING SOUND</h4>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>10 V=54296:W=54276:A=54277:H=54273:L=54272
+20 FOR X=15 TO 0 STEP-1:POKEV,X:POKEW,129:POKEA,15:POKEH,40:POKEL,200:NEXT
+30 POKEW,0:POKEA,0</code></pre>
+
+        </div>
+    </div>
+</body>
+</html>
+

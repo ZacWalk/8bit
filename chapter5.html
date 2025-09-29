@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: Advanced Color and Graphic Commands - Commodore 64 User's Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="c64-roms.js"></script>
+    <script defer src="c64.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="c64-dark-blue text-white p-6">
+        <div class="container mx-auto">
+            <a href="index.html" class="text-white hover:underline">&larr; Back to Index</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-8 max-w-4xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold mb-6 c64-blue">Chapter 5: Advanced Color and Graphic Commands</h1>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">COLOR AND GRAPHICS</h2>
+            <p class="mb-4">Up to now we've explored some of the sophisticated computing capabilities of the Commodore 64. But one of its most fascinating features is an outstanding ability to produce color and graphics.</p>
+            <p class="mb-4">You've seen a quick example of graphics in the "bouncing ball" and "maze" programs. But these only touched on the power you command. A number of new concepts will be introduced in this section to explain graphic and color programming and show how you can create your own games and advanced animation.</p>
+            <p class="mb-4">Because we've concentrated on the computing capabilities of the machine, all the displays we've generated so far were a single color (light blue text on a dark blue background, with a light blue border).</p>
+            <p class="mb-4">In this chapter we'll see how to add color to programs and control all those strange graphic symbols on the keyboard.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">PRINTING COLORS</h2>
+            <p class="mb-4">As you discovered if you tried the color alignment test in Chapter 1, you can change text colors by simply holding the CTRL key and one of the color keys. This works fine in the immediate mode, but what happens if you want to incorporate color changes in your programs?</p>
+            <p class="mb-4">When we showed the "bouncing ball" program, you saw how keyboard commands, like cursor movement, could be incorporated within PRINT statements. In a like way, you can also add text color changes to your programs.</p>
+            <p class="mb-4">You have a full range of 16 text colors to work with. Using the CTRL key and a number key, the following colors are available:</p>
+            <ul class="list-disc list-inside mb-4">
+                <li>1: Black, 2: White, 3: Red, 4: Cyan, 5: Purple, 6: Green, 7: Blue, 8: Yellow</li>
+            </ul>
+            <p class="mb-4">If you hold down the Commodore key along with the appropriate number key, these additional eight colors can be used:</p>
+             <ul class="list-disc list-inside mb-4">
+                <li>1: Orange, 2: Brown, 3: Lt. Red, 4: Gray 1, 5: Gray 2, 6: Lt. Green, 7: Lt. Blue, 8: Gray 3</li>
+            </ul>
+            <p class="mb-4">Just as cursor controls show as graphic characters within the quote marks of print statements, color controls are also represented as graphic characters.</p>
+
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 my-4" role="alert">
+                <p class="font-bold">TIP:</p>
+                <p>You will notice after running a program with color or mode (reverse) changes, that the "READY" prompt and any additional text you type is the same as the last color or mode change. To get back to the normal display, remember to depress: RUN/STOP and RESTORE.</p>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">COLOR CHR$ CODES</h2>
+            <p class="mb-4">You may have noticed in looking over the list of CHR$ codes in Appendix F that each color (as well as most other keyboard controls, such as cursor movement) has a unique code. These codes can be printed directly to obtain the same results as typing CTRL and the appropriate key within the PRINT statement.</p>
+            <p class="mb-4">For example, try this:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 PRINT CHR$(147) :REM {CLR/HOME}
+20 PRINT CHR$(30) "CHR$(30) CHANGES ME TO GREEN"</code></pre>
+            <p class="mb-4">The following program is a different way to get a rainbow of colors.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+1 REM AUTOMATIC COLOR BARS
+5 PRINT CHR$(147)
+10 PRINT CHR$(18);"     ":REM REVERSE BAR
+20 CL=INT(8*RND(1))+1
+30 ON CL GOTO 40,50,60,70,80,90,100,110
+40 PRINT CHR$(5);:GOTO 10
+50 PRINT CHR$(28);:GOTO 10
+60 PRINT CHR$(30);:GOTO 10
+70 PRINT CHR$(31);:GOTO 10
+80 PRINT CHR$(144);:GOTO 10
+90 PRINT CHR$(156);:GOTO 10
+100 PRINT CHR$(158);:GOTO 10
+110 PRINT CHR$(159);:GOTO 10</code></pre>
+            <p class="mb-4">Line 20 uses our workhorse, the random function to select a random color between 1 and 8.</p>
+            <p class="mb-4">Line 30 contains a variation of the IF...THEN statement which is called ON...GOTO. ON...GOTO allows the program to choose from a list of line numbers to go to. If the variable (in this case CL) has a value of 1, the first line number is the one chosen (here 40). If the value is 2, the second number in the list is used, etc.</p>
+            <p class="mb-4">Lines 40-110 just convert our random key colors to the appropriate CHR$ code for that color and return the program to line 10 to PRINT a section of the bar in that color. Then the whole process starts over again.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">PEEKS AND POKES</h2>
+            <p class="mb-4">Just as variables could be thought of as a representation of "boxes" within the machine where you placed your information, you can also think of some specially defined "boxes" within the computer that represent specific memory locations.</p>
+            <p class="mb-4">The Commodore 64 looks at these memory locations to see what the screen's background and border color should be, what characters are to be displayed on the screen and where and a host of other tasks.</p>
+            <p class="mb-4">By placing, "POKEing," a different value into the proper memory location, we can change colors, define and move objects, and even create music.</p>
+            <p class="mb-4">Two of which control the screen and background colors. Try typing this:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>POKE 53281,7</code></pre>
+            <p class="mb-4">The background color of the screen will change to yellow because we placed the value '7'—for yellow—in the location that controls the background color of the screen.</p>
+            <p class="mb-4">The actual values to POKE for each color are:</p>
+            <ul class="list-disc list-inside mb-4 grid grid-cols-2">
+                <li>0 BLACK</li><li>8 ORANGE</li>
+                <li>1 WHITE</li><li>9 BROWN</li>
+                <li>2 RED</li><li>10 Light RED</li>
+                <li>3 CYAN</li><li>11 GRAY 1</li>
+                <li>4 PURPLE</li><li>12 GRAY 2</li>
+                <li>5 GREEN</li><li>13 Light GREEN</li>
+                <li>6 BLUE</li><li>14 Light BLUE</li>
+                <li>7 YELLOW</li><li>15 GRAY 3</li>
+            </ul>
+            <p class="mb-4">Can you think of a way to display the various background and border combinations? The following may be of some help:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 FOR BA = 0 TO 15
+20 FOR BO = 0 TO 15
+30 POKE 53280, BO
+40 POKE 53281, BA
+50 FOR X = 1 TO 200: NEXT X
+60 NEXT BO: NEXT BA</code></pre>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">SCREEN GRAPHICS</h2>
+            <p class="mb-4">Just as there are certain spots in the Commodore 64's memory to control color, there are also locations that you can use to directly control each location on the screen.</p>
+            
+            <h3 class="text-xl font-bold mt-6 mb-4 c64-blue">SCREEN MEMORY MAP</h3>
+            <p class="mb-4">Since the computer's screen is capable of holding 1000 characters (40 columns by 25 lines) there are 1000 memory locations set aside to handle what is placed on the screen. By POKEing the value for a character in the appropriate screen memory location, that character will be displayed in the proper position. Screen memory in the Commodore 64 normally begins at memory location 1024, and ends at location 2023.</p>
+            <div class="mb-4 p-4 border rounded-lg">
+                [Image: Diagram of the Screen Memory Map grid]
+            </div>
+            <p class="mb-4">The formula for calculation of the memory location on the screen is: <code>POINT = 1024 + X + 40*Y</code> where X is the column and Y is the row.</p>
+
+            <h3 class="text-xl font-bold mt-6 mb-4 c64-blue">COLOR MEMORY MAP</h3>
+            <p class="mb-4">For every spot on the Commodore 64's screen there are two memory locations, one for the character code, and the other for the color code. The color memory map begins at location 55296 (top left-hand corner), and continues on for 1000 locations.</p>
+            <div class="mb-4 p-4 border rounded-lg">
+                [Image: Diagram of the Color Memory Map grid]
+            </div>
+            <p class="mb-4">The formula we used for calculating screen memory locations can be modified to give the locations to POKE color codes. The new formula is: <code>COLOR POINT = 55296 + X + 40*Y</code></p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">MORE BOUNCING BALLS</h2>
+            <p class="mb-4">Here's a revised bouncing ball program that prints directly on the screen with POKES, rather than using cursor controls within PRINT statements. As you will see after running the program, it is much more flexible than the earlier program, and will lead up to programming much more sophisticated animation.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 PRINT "{CLR/HOME}"
+20 POKE 53280,7: POKE 53281,13
+30 X=1: Y=1
+40 DX=1: DY=1
+50 POKE 1024+X+40*Y,81
+60 FOR T=1 TO 10: NEXT
+70 POKE 1024+X+40*Y,32
+80 X=X+DX
+90 IF X<=0 OR X>=39 THEN DX=-DX
+100 Y=Y+DY
+110 IF Y<=0 OR Y>=24 THEN DY=-DY
+120 GOTO 50</code></pre>
+            <p class="mb-4">Line 50 puts the ball on the screen at the current cursor position. Line 70 erases the ball by putting a space (code 32) where the ball was on the screen. Lines 90 and 110 test to see if the ball has reached one of the walls, reversing the direction if there's a bounce.</p>
+            <p class="mb-4">We can also add a little more intelligence. So far the only thing you checked for is the X and Y values getting out of bounds for the screen. Add the following lines to the program.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>21 FOR L=1 TO 10
+25 POKE 1024+INT(RND(1)*1000),166
+27 NEXT L
+85 IF PEEK(1024+X+40*Y)=166 THEN DX=-DX:GOTO 80
+105 IF PEEK(1024+X+40*Y)=166 THEN DY=-DY:GOTO 100</code></pre>
+            <p class="mb-4">Lines 21 to 27 put 10 blocks on the screen in random positions. Lines 85 and 105 check (PEEK) to see if the ball is about to bounce into a block, and changes the ball's direction if so.</p>
+        </div>
+    </div>
+</body>
+</html>
+

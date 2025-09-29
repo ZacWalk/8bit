@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Sprite Graphics - Commodore 64 User's Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="c64-roms.js"></script>
+    <script defer src="c64.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="c64-dark-blue text-white p-6">
+        <div class="container mx-auto">
+            <a href="index.html" class="text-white hover:underline">&larr; Back to Index</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-8 max-w-4xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold mb-6 c64-blue">Chapter 6: Sprite Graphics</h1>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">INTRODUCTION TO SPRITES</h2>
+            <p class="mb-4">In previous chapters dealing with graphics, we saw that graphic symbols could be used in PRINT statements to create animation and add chartlike appearances to our displays.</p>
+            <p class="mb-4">A way was also shown to POKE character codes in specific screen memory locations. This would then place the appropriate characters directly on the screen in the right spot.</p>
+            <p class="mb-4">Creating animation in both these cases requires a lot of work because objects must be created from existing graphic symbols. Moving the object requires a number of program statements to keep track of the object and move it to a new spot. And, because of the limitation of using graphic symbols, the shape and resolution of the object might not be as good as required.</p>
+            <p class="mb-4">Using sprites in animated sequences eliminates a lot of these problems. A sprite is a high-resolution programmable object that can be made into just about any shape—through BASIC commands. The object can be easily moved around the screen by simply telling the computer the position the sprite should be moved to. The computer takes care of the rest.</p>
+            <p class="mb-4">And sprites have much more power than just that. Their color can be changed; you can tell if one object collides with another; they can be made to go in front and behind another; and they can be easily expanded in size, just for starters.</p>
+            <p class="mb-4">The penalty for all this is minimal. However, using sprites requires knowing some more details about how the Commodore 64 operates and how numbers are handled within the computer. It's not as difficult as it sounds, though. Just follow the examples and you'll be making your own sprites do amazing things in no time.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">SPRITE CREATION</h2>
+            <p class="mb-4">Sprites are controlled by a separate picture-maker in the Commodore 64. This picture maker handles the video display. It does all the hard work of creating and keeping track of characters and graphics, creating colors, and moving around.</p>
+            <p class="mb-4">This display circuit has 46 different "ON/OFF" locations which act like internal memory locations. Each of these locations breaks down into a series of 8 blocks. And each block can either be "on" or "off". We'll get into more detail about this later. By POKEing the appropriate decimal value in the proper memory location you can control the formation and movement of your sprite creations.</p>
+            <p class="mb-4">A sprite object is 24 dots wide by 21 dots long. Up to eight sprites can be controlled at a time. Sprites are displayed in a special independent 320 dot wide by 200 dot high area. However, you can use your sprite with any mode, high-resolution, low-resolution, text etc.</p>
+            <p class="mb-4">Say you want to create a balloon and have it float around the sky. The balloon could be designed as in a 24 by 21 grid. The next step is to convert the graphic design into data the computer can use.</p>
+            <p class="mb-4">To get the data for your object, you need to convert the dots on your grid into a series of decimal numbers. Each row of 24 dots is broken into three 8-dot sections (bytes). For each 8-dot section, you add up the values for the "on" dots (128, 64, 32, 16, 8, 4, 2, 1) to get a decimal value. This gives you three numbers for each of the 21 rows.</p>
+            <p class="mb-4">Now that you have the data for your object, how can it be put to use? Type in the following program and see what happens.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>1 REM UP, UP, AND AWAY!
+5 PRINT "{CLR/HOME}"
+10 V=53248 : REM START OF DISPLAY CHIP
+11 POKE V+21,4 : REM ENABLE SPRITE 2
+12 POKE 2042,13 : REM SPRITE 2 DATA FROM 13TH BLK
+20 FOR N=0 TO 62: READ Q: POKE 832+N,Q: NEXT
+30 FOR X=0 TO 200
+40 POKE V+4,X : REM UPDATE X COORDINATES
+50 POKE V+5,X : REM UPDATE Y COORDINATES
+60 NEXT X
+70 GOTO 30
+200 DATA 0,127,0,1,255,192,3,255,224,3,231,224
+210 DATA 7,217,240,7,223,240,7,217,240,3,231,224
+220 DATA 3,255,224,3,255,224,2,255,160,1,127,64
+230 DATA 1,62,64,0,156,128,0,156,128,0,73,0,0,73,0
+240 DATA 0,62,0,0,62,0,0,62,0,0,28,0</code></pre>
+            <p class="mb-4">If you typed everything correctly, your balloon is smoothly flying across the sky.</p>
+            <p class="mb-4">Line 10 sets V to the starting memory location of the video chip (53248). Line 11 enables sprite 2 by POKEing a 4 into the sprite enable register (V+21). Line 12 tells the computer to get the data for sprite 2 from the 13th 64-byte block of memory, which starts at location 832. Line 20 reads the 63 bytes of data and POKEs them into memory. Lines 30-60 create a loop that updates the X and Y coordinates of the sprite, making it move diagonally across the screen.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">ADDITIONAL NOTES ON SPRITES</h2>
+            <p class="mb-4">Now that you've experimented with sprites, a few more words are in order. First, you can change a sprite's color to any of the standard 16 color codes (0-15) that were used to change character color. For example, to change sprite 1 to light green, type: <code>POKE V+40,13</code> (be sure to set V=53248).</p>
+            <p class="mb-4">You may have noticed that the object never moved to the right-hand edge of the screen. This was because the screen is 320 dots wide and the X direction register can only hold a value up to 255. To get an object to move across the entire screen, you need to use the most significant bit (MSB) register at location V+16. After the sprite reaches X position 255, you POKE V+16 with the value for your sprite (e.g., 4 for sprite 2). Then you can use the normal X register again for values 0-63 to cover the rest of the screen.</p>
+            <p class="mb-4">To define multiple sprites, you may need additional blocks for the sprite data. You can use some of BASIC's RAM by moving BASIC. Before typing or loading your program type:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>POKE 44,16:POKE 16*256,0:NEW</code></pre>
+            <p class="mb-4">Now, you can use blocks 32 through 41 (locations 2048 through 4095) to store sprite data.</p>
+            
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">BINARY ARITHMETIC</h2>
+            <p class="mb-4">It is beyond the scope of this introductory manual to go into details of how the computer handles numbers. We will, however, provide you with a good base for understanding the process.</p>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>BIT:</strong> This is the smallest amount of information a computer can store, either a 1 ("on") or a 0 ("off").</li>
+                <li><strong>BYTE:</strong> A series of 8 BITS. A byte can represent 256 different combinations, giving it a decimal value from 0 to 255.</li>
+                <li><strong>REGISTER:</strong> A block of memory (usually 1 byte long in this context) that controls a specific function, like enabling a sprite or expanding it.</li>
+            </ul>
+            <p class="mb-4">Any possible combination of eight 0's and 1's will convert to a unique decimal value between 0-255. This is the basis for creating data that represents sprites.</p>
+             <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 my-4" role="alert">
+                <p class="font-bold">TIP:</p>
+                <p>To save you the trouble of converting binary numbers into decimal values—we'll need to do that a lot—the following program will do the work for you. It's a good idea to enter and save the program for future use.</p>
+                <pre class="bg-gray-200 text-black p-4 rounded-lg my-2"><code>5 REM BINARY TO DECIMAL CONVERTER
+10 INPUT "ENTER 8-BIT BINARY NUMBER:";A$
+12 IF LEN(A$)<>8 THEN PRINT "8 BITS PLEASE...":GOTO 10
+15 TL=0:C=0
+20 FOR X=8 TO 1 STEP -1:C=C+1
+30 TL=TL+VAL(MID$(A$,C,1))*2^(X-1)
+40 NEXT X
+50 PRINT A$;" BINARY = ";TL;" DECIMAL"
+60 GOTO 10</code></pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

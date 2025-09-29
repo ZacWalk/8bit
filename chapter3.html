@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3: Beginning BASIC Programming - Commodore 64 User's Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="c64-roms.js"></script>
+    <script defer src="c64.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="c64-dark-blue text-white p-6">
+        <div class="container mx-auto">
+            <a href="index.html" class="text-white hover:underline">&larr; Back to Index</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-8 max-w-4xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold mb-6 c64-blue">Chapter 3: Beginning BASIC Programming</h1>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">THE NEXT STEP</h2>
+            <p class="mb-4">Up to now we've performed some simple operations by entering a single line of instructions into the computer. Once RETURN was depressed, the operation that we specified was performed immediately. This is called the IMMEDIATE or CALCULATOR mode.</p>
+            <p class="mb-4">But to accomplish anything significant, we must be able to have the computer operate with more than a single line statement. A number of statements combined together is called a PROGRAM and allows you to use the full power of the Commodore 64.</p>
+            <p class="mb-4">To see how easy it is to write your first Commodore 64 program, try this:</p>
+            <p class="mb-4">Clear the screen by holding the SHIFT key, and then depressing the CLR/HOME key.</p>
+            <p class="mb-4">Type NEW and press RETURN (This just clears out any numbers that might have been left in the computer from your experimenting.)</p>
+            <p class="mb-4">Now type the following exactly as shown (Remember to hit RETURN after each line)</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>10 ? "COMMODORE 64"
+20 GOTO 10</code></pre>
+            <p class="mb-4">Now, type RUN and hit RETURN - watch what happens. Your screen will come alive with COMMODORE 64. After you've finished watching the display, hit RUN/STOP to stop the program.</p>
+            <p class="mb-4">A number of important concepts were introduced in this short program that are the basis for all programming.</p>
+            <p class="mb-4">Notice that here we preceded each statement with a number. This LINE number tells the computer in what order to work with each statement. These numbers are also a reference point, in case the program needs to get back to a particular line. Line numbers can be any whole number (integer) value between 0-63,999.</p>
+            <p class="mb-4">It is good programming practice to number lines in increments of 10—in case you need to insert some statements later on.</p>
+            <p class="mb-4">Besides PRINT, our program also used another BASIC command, GOTO. This instructs the computer to go directly to a particular line and perform it, then continue from that point.</p>
+            <p class="mb-4">In our example, the program prints the message in line 10, goes to the next line (20), which instructs it to go back to line 10 and print the message over again. Then the cycle repeats. Since we didn't give the computer a way out of this loop, the program will cycle endlessly, until we physically stop it with the RUN/STOP key.</p>
+            <p class="mb-4">Once you've stopped the program, type: LIST. Your program will be displayed, intact, because it's still in the computer's memory. Notice, too, that the computer converted the ? into PRINT for you. The program can now be changed, saved, or run again.</p>
+            <p class="mb-4">Another important difference between typing something in the immediate mode and writing a program is that once you execute and clear the screen of an immediate statement, it's lost. However, you can always get a program back by just typing LIST.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">EDITING TIPS</h2>
+            <p class="mb-4">If you make a mistake on a line, you have a number of editing options.</p>
+            <ol class="list-decimal list-inside space-y-2 mb-4">
+                <li>You can retype a line anytime, and the computer will automatically substitute the new line for the old one.</li>
+                <li>An unwanted line can be erased by simply typing the line number and RETURN.</li>
+                <li>You can also easily edit an existing line, using the cursor keys and editing keys.</li>
+            </ol>
+            <p class="mb-4">Suppose you made a typing mistake in a line of the example. To correct it without retyping the entire line, try this:</p>
+            <p class="mb-4">Type LIST, then using the SHIFT and CRSR keys together move the cursor up until it is positioned on the line that needs to be changed. Now, use the cursor-right key to move the cursor to the character you want to change, typing the change over the old character. Now hit RETURN and the corrected line will replace the old one.</p>
+            <p class="mb-4">If you need more space on the line, position the cursor where the space is needed and hit SHIFT and INST/DEL at the same time and a space will open up. Now just type in the additional information and hit RETURN. Likewise, you can delete unwanted characters by placing the cursor to the right of the unwanted character and hitting the INST/DEL key.</p>
+            <p class="mb-4">To verify that changes were entered, type LIST again, and the corrected program will be displayed! And lines don't have to be entered in numerical order. The computer will automatically place them in the proper sequence.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">VARIABLES</h2>
+            <p class="mb-4">Variables are some of the most used features of any programming language, because variables can represent much more information in the computer. Understanding how variables operate will make computing easier and allow us to accomplish feats that would not be possible otherwise.</p>
+            <p class="mb-4">Imagine a number of boxes within the computer that can each hold a number or a string of text characters. Each of these boxes is to be labeled with a name that we choose. That name is called a variable and represents the information in the respective box.</p>
+            <p class="mb-4">A variable name represents the box, or memory location, where the current value of the variable is stored. As you can see, we can assign either an integer number, floating point number, or a text string to a variable.</p>
+            <p class="mb-4">The % symbol following a variable name indicates the variable will represent an integer number. The '$' following the variable name indicates the variable will represent a text string. Floating point variables follow the same format, with no type indicator.</p>
+            <p class="mb-4">In assigning a name to a variable there are a few things to keep in mind. First, a variable name can have one or two characters. The first character must be an alphabetic character from A to Z; the second character can be either alphabetic or numeric (in the range 0 to 9). A third character can be included to indicate the type of variable (integer or text string), % or \$. You can use variable names having more than two alphabetic characters, but only the first two are recognized by the computer. So PA and PARTNO are the same and would refer to the same variable box. The last rule for variable names is simple: they can't contain any BASIC keywords (reserved words) such as GOTO, RUN, etc.</p>
+            <p class="mb-4">To see how variables can be put to work, type in the complete program that we introduced earlier and RUN it. Remember to hit RETURN after each line in the program.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 X% = 15
+20 X = 23.5
+30 X$ = "THE SUM OF X% + X ="
+40 PRINT "X% = "; X%, "X = "; X
+50 PRINT X$; X% + X</code></pre>
+            <p class="mb-4">If you did everything as shown, you should get the following result printed on the screen.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>RUN
+X% = 15        X = 23.5
+THE SUM OF X% + X = 38.5
+READY.</code></pre>
+            <p class="mb-4">Note that even though X is used as part of each variable name, the identifiers % and $ make X%, X, and X$ unique, thus representing three distinct variables.</p>
+            <p class="mb-4">But variables are much more powerful. If you change their value, the new value replaces the original value in the same box. This allows you to write a statement like: <code>X = X + 1</code>. This would never be accepted in normal algebra, but is one of the most used concepts in programming. It means: take the current value of X, add one to it and place the new sum into the box representing X.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">IF... THEN</h2>
+            <p class="mb-4">Armed with the ability to easily update the value of variables, we can now try a program such as:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 CT = 0
+20 ? "COMMODORE 64"
+30 CT = CT + 1
+40 IF CT < 5 THEN 20
+50 END</code></pre>
+            <p class="mb-4">IF... THEN adds some logic to the program. It says IF a condition holds true THEN do something. IF the condition no longer holds true, THEN do the next line in the program.</p>
+            <p class="mb-4">A number of conditions can be set up in using an IF... THEN statement:</p>
+            <ul class="list-disc list-inside mb-4">
+                <li><code class="font-mono">&lt;</code> Less Than</li>
+                <li><code class="font-mono">&gt;</code> Greater Than</li>
+                <li><code class="font-mono">=</code> Equal To</li>
+                <li><code class="font-mono">&lt;&gt;</code> Not Equal To</li>
+                <li><code class="font-mono">&gt;=</code> Greater Than or Equal To</li>
+                <li><code class="font-mono">&lt;=</code> Less Than or Equal To</li>
+            </ul>
+            <p class="mb-4">In the sample program, we've set up a "loop" that has some constraints placed on it. Line 10 sets CT (CounT) equal to 0. Line 20 prints our message. Line 30 adds one to the variable CT. This line counts how many times we do the loop. Line 40 is our control line. If CT is less than 5, the program goes back to line 20 and prints again. When CT becomes equal to 5, the program goes to line 50, which signals to END the program.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">FOR... NEXT LOOPS</h2>
+            <p class="mb-4">There is a simpler, and preferred way to accomplish what we did in the previous example by using a FOR... NEXT loop. Consider the following:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 FOR CT = 1 TO 5
+20 PRINT "COMMODORE 64"
+30 NEXT CT</code></pre>
+            <p class="mb-4">CT starts at 1 in line 10. Then, line 20 does some printing. In Line 30 CT is incremented by 1. The NEXT statement in line 30 automatically sends the program back to line 10. This process will continue until CT reaches the limit you entered.</p>
+            <p class="mb-4">The variable used in a FOR.. NEXT loop can be incremented by smaller amounts than 1, if needed, by using the STEP keyword. Try this:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 FOR NB = 1 TO 10 STEP .5
+20 PRINT NB,
+30 NEXT NB</code></pre>
+            <p class="mb-4">You can even specify whether the variable is increasing or decreasing. Substitute the following for line 10:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>10 FOR NB = 10 TO 1 STEP -.5</code></pre>
+            <p class="mb-4">...and watch the opposite occur, as NB goes from 10 to 1 in descending order.</p>
+
+        </div>
+    </div>
+</body>
+</html>
+

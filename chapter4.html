@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: Advanced BASIC - Commodore 64 User's Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="c64-roms.js"></script>
+    <script defer src="c64.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="c64-dark-blue text-white p-6">
+        <div class="container mx-auto">
+            <a href="index.html" class="text-white hover:underline">&larr; Back to Index</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-8 max-w-4xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold mb-6 c64-blue">Chapter 4: Advanced BASIC</h1>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">INTRODUCTION</h2>
+            <p class="mb-4">The next few chapters have been written for people who have become relatively familiar with the BASIC programming language and the concepts necessary to write more advanced programs.</p>
+            <p class="mb-4">For those of you who are just starting to learn how to program, you may find some of the information a bit too technical to understand completely. But take heart. because for these two fun chapters, SPRITE GRAPHICS and CREATING SOUND, we've set up some simple examples that are written for the new user. The examples will give you a good idea of how to use the sophisticated sound and graphics capabilities available on your COMMODORE 64.</p>
+            <p class="mb-4">If you decide that you want to learn more about writing programs in BASIC, we've put a bibliography (Appendix N) in the back of this manual.</p>
+            <p class="mb-4">If you are already familiar with BASIC programming, these chapters will help you get started with advanced BASIC programming techniques. More detailed information can be found in the COMMODORE 64 PROGRAMMER'S REFERENCE MANUAL, available through your local Commodore dealer.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">SIMPLE ANIMATION</h2>
+            <p class="mb-4">Let's exercise some of the Commodore 64's graphic capabilities by putting together what we've seen so far, together with a few new concepts. If you're ambitious, type in the following program and see what happens. You will notice that within the print statements we can also include cursor controls and screen commands. When you see something like {CRSR LEFT} in a program listing, hold the SHIFT key and hit the CRSR LEFT/RIGHT key. The screen will show the graphic representation of a cursor left (two vertical reversed bars). In the same way, pressing SHIFT and CLR/HOME shows as a reversed heart.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 REM BOUNCING BALL
+20 PRINT "{CLR/HOME}"
+25 FOR X=1 TO 10: PRINT "{CRSR/DOWN}": NEXT
+30 FOR BL=1 TO 40
+40 PRINT " {CRSR LEFT}";:REM (BALL is a SHIFT-Q)
+50 FOR TM=1 TO 5
+60 NEXT TM
+70 NEXT BL
+75 REM MOVE BALL RIGHT TO LEFT
+80 FOR BL=40 TO 1 STEP -1
+90 PRINT " {CRSR LEFT}{CRSR LEFT}{CRSR LEFT}";
+100 FOR TM=1 TO 5
+110 NEXT TM
+120 NEXT BL
+130 GOTO 20</code></pre>
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 my-4" role="alert">
+                <p class="font-bold">TIP:</p>
+                <p>All words in this text will be completed on one line. However, as long as you don't hit RETURN your 64 will automatically move to the next line even in the middle of a word.</p>
+            </div>
+            <p class="mb-4">The program will display a bouncing ball moving from left to right, and back again, across the screen.</p>
+            <p class="mb-4">If we look at the program closely, you can see how this feat was accomplished.</p>
+            <p class="mb-4">Line 10 is a REMark that just tells what the program does; it has no effect on the program itself. Line 20 clears the screen of any information.</p>
+            <p class="mb-4">Line 25 PRINTs 10 cursor-down commands. This just positions the ball in the middle of the screen. If line 25 was eliminated the ball would move across the top line of the screen.</p>
+            <p class="mb-4">Line 30 sets up a loop for moving the ball the 40 columns from the left to right.</p>
+            <p class="mb-4">Line 40 does a lot of work. It first prints a space to erase the previous ball positions, then it prints the ball, and finally it performs a cursor-left to get everything ready to erase the current ball position again.</p>
+            <p class="mb-4">The loop set up in lines 50 and 60 slows the ball down a bit by delaying the program. Without it, the ball would move too fast to see.</p>
+            <p class="mb-4">Line 70 completes the loop that prints balls on the screen, set up in line 30. Each time the loop is executed, the ball moves another space to the right. As you notice from the illustration, we have set up a loop within a loop.</p>
+            <p class="mb-4">This is perfectly acceptable. The only time you get in trouble is when the loops cross over each other. It's helpful in writing programs to check yourself as illustrated here to make sure the logic of a loop is correct. To see what would happen if you cross a loop, reverse the statements in lines 60 and 70. You will get an error because the computer gets confused and cannot figure out what's going on.</p>
+            <p class="mb-4">Lines 80 through 120 just reverse the steps in the first part of the program, and move the ball from right to left. Line 90 is slightly different from line 40 because the ball is moving in the opposite direction (we have to erase the ball to the right and move to the left).</p>
+            <p class="mb-4">And when that's all done the program goes back to line 20 to start the whole process over again. Pretty neat! To stop the program hold down RESTORE and hit RUN/STOP.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">INPUT</h2>
+            <p class="mb-4">Up to now, everything within a program has been set before it is run. Once the program was started, nothing could be changed. INPUT allows us to pass new information to a program as it is running and have that new information acted upon.</p>
+            <p class="mb-4">To get an idea of how INPUT works, type NEW RETURN and enter this short program:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>10 INPUT A$
+20 PRINT "YOU TYPED: ";A$
+30 PRINT
+40 GOTO 10</code></pre>
+            <p class="mb-4">What happens when you run this program is simple. A question mark will appear, indicating that the computer is waiting for you to type something. Enter any character, or group of characters, from the keyboard and hit RETURN. The computer will then respond with "YOU TYPED" followed by the information you entered.</p>
+            <p class="mb-4">You can INPUT either numeric or string variables, and even have the INPUT statement prompt the user with a message. The format of INPUT is: <code>INPUT "PROMPT MESSAGE"; VARIABLE</code></p>
+            <p class="mb-4">The following program is not only useful, but demonstrates a lot of what has been presented so far, including the new input statement.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+1 REM TEMPERATURE CONVERSION PROGRAM
+5 PRINT "{CLR/HOME}"
+10 PRINT "CONVERT FROM FAHRENHEIT OR CELSIUS (F/C)";: INPUT A$
+20 IF A$="" THEN 10
+30 IF A$="F" THEN 100
+40 IF A$<>"C" THEN 10
+50 INPUT "ENTER DEGREES CELSIUS: ";C
+60 F=(C*9)/5+32
+70 PRINT C;" DEG. CELSIUS = ";F;" DEG. FAHRENHEIT"
+80 PRINT
+90 GOTO 10
+100 INPUT "ENTER DEGREES FAHRENHEIT: ";F
+110 C=(F-32)*5/9
+120 PRINT F;" DEG. FAHRENHEIT = ";C;" DEG. CELSIUS"
+130 PRINT
+140 GOTO 10</code></pre>
+            <p class="mb-4">Lines 20, 30, and 40 do some checks on what is typed in. It is good programming practice. A user not familiar with the program can become very frustrated if it does something strange because a mistake was made entering information.</p>
+            <p class="mb-4">Once we determine what type of conversion to perform, the program does the calculation and prints out the temperature entered and the converted temperature.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">GET</h2>
+            <p class="mb-4">GET allows you to input one character at a time from the keyboard without hitting RETURN. This really speeds entering data in many applications. Whatever key is hit is assigned to the variable you specify with GET.</p>
+            <p class="mb-4">The following routine illustrates how GET works:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+1 PRINT "{CLR/HOME}"
+10 GET A$: IF A$="" THEN 10
+20 PRINT A$;
+30 GOTO 10</code></pre>
+            <p class="mb-4">It is important to note that the character entered will not be displayed unless you specifically PRINT it to the screen, as we've done here.</p>
+            <p class="mb-4">The second statement on line 10 is also important. GET continually works, even if no key is pressed (unlike INPUT that waits for a response), so the second part of this line continually checks the keyboard until a key is hit.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">RANDOM NUMBERS AND OTHER FUNCTIONS</h2>
+            <p class="mb-4">The Commodore 64 contains a number of functions that are used to perform special operations. Functions could be thought of as built-in programs included in BASIC.</p>
+            <p class="mb-4">Many times when designing a game or educational program, you need to generate a random number, to simulate the throw of dice, for example. You could certainly write a program that would generate these numbers, but an easier way to call upon the RaNDom number function. To see what RND actually does, try this short program:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+10 FOR X=1 TO 10
+20 PRINT RND(1),
+30 NEXT</code></pre>
+            <p class="mb-4">Your numbers don't match? Well, if they did we would all be in trouble, as they should be completely random! The results are always between 0 and 1. To produce numbers from the RND function in the range desired, we can modify the program.</p>
+            <p class="mb-4">Replace line 20 with the following: <code>20 PRINT INT(6*RND(1))+1,</code></p>
+            <p class="mb-4">Now, we have achieved the desired results for a dice roll (1-6). The INTeger function converts real numbers into integer values. The general formula for generating a set of random numbers in a certain range is: <code>NUMBER = INT(LOWERLIMIT + (UPPER-LOWER+1)*RND(1))</code></p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">GUESSING GAME</h2>
+            <p class="mb-4">The following game not only illustrates a good use of random numbers, but also introduces some additional programming theory.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>NEW
+1 REM NUMBER GUESSING GAME
+2 PRINT "{CLR/HOME}"
+5 INPUT "ENTER UPPER LIMIT FOR GUESS ";LI
+10 NM=INT(LI*RND(1))+1
+15 CN=0
+20 PRINT "I'VE GOT THE NUMBER.":PRINT
+30 INPUT "WHAT'S YOUR GUESS";GU
+35 CN=CN+1
+40 IF GU>NM THEN PRINT "MY NUMBER IS LOWER":PRINT:GOTO 30
+50 IF GU<NM THEN PRINT "MY NUMBER IS HIGHER":PRINT:GOTO 30
+60 PRINT "GREAT! YOU GOT MY NUMBER"
+65 PRINT "IN ONLY ";CN;" GUESSES.":PRINT
+70 PRINT "DO YOU WANT TO TRY ANOTHER (Y/N)";
+80 GET AN$:IF AN$="" THEN 80
+90 IF AN$="Y" THEN 2
+100 IF AN$<>"N" THEN 70
+110 END</code></pre>
+            <p class="mb-4">IF/THEN statements compare your guess to the number generated. Depending on your guess, the program tells you whether your guess was higher or lower than the random number generated.</p>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">YOUR ROLL</h2>
+            <p class="mb-4">The following program simulates the throw of two dice.</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>5 PRINT "Care to try your luck?"
+10 PRINT "RED DICE = ";INT(6*RND(1))+1
+20 PRINT "WHITE DICE = ";INT(6*RND(1))+1
+30 PRINT "HIT SPACE BAR FOR ANOTHER ROLL":PRINT
+40 GET A$:IF A$="" THEN 40
+50 IF A$=CHR$(32) THEN 10</code></pre>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4 c64-blue">RANDOM GRAPHICS</h2>
+            <p class="mb-4">As a final note on random numbers, and as an introduction to designing graphics, take a moment to enter and run this neat little program:</p>
+            <pre class="bg-gray-200 p-4 rounded-lg my-4"><code>10 PRINT "{CLR/HOME}"
+20 PRINT CHR$(205.5+RND(1));
+30 GOTO 20</code></pre>
+            <p class="mb-4">Another function, CHR$ (Character String), gives you a character, based on a standard code number from 0 to 255. Every character the Commodore 64 can print is encoded this way (see Appendix F).</p>
+            <p class="mb-4">To quickly find out the code for any character, just type: <code>PRINT ASC("X")</code> where X is the character you're checking. "ASC" is another function, which returns the standard "ASCII" code for the character you typed. You can now print that character by typing: <code>PRINT CHR$(X)</code></p>
+        </div>
+    </div>
+</body>
+</html>
+
