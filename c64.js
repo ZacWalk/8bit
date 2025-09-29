@@ -1,6 +1,7 @@
 // Core C64 emulator: 6502 CPU + machine state
 // Uses existing global ROM byte arrays: rom_basic (8K), rom_kernal (8K), rom_chars.
-
+// This code was written by Zac Walker. You may use this code in your own projects, 
+// but please attribute to the original author.
 (function() {
     const FLAG_CARRY = 1,
         FLAG_ZERO = 2,
