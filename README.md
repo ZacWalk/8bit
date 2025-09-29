@@ -10,7 +10,7 @@ Visit: https://zacwalk.github.io/8bit/
 `c64.js` (emulator) • `c64-roms.js` (ROM data) • `app.js` (layout + buttons + SPA + heuristics) • `styles.css` (layout/theme) • `index.html` & chapters (content).
 
 ## TODO
-- [ ] Sprite + bitmap graphics pipeline (VIC-II layer beyond text mode)
+- [ ] Bitmap graphics pipeline (VIC-II layer beyond text mode)
 - [ ] SID audio synthesis (WebAudio voices, waveforms, ADSR, simple filter)
 - [ ] Disk/tape style IO or PRG import/export (functional LOAD/SAVE shortcuts)
 - [ ] Full keyboard matrix & PETSCII mapping (RUN/STOP, RESTORE, graphics chars)

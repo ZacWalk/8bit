@@ -16,7 +16,13 @@
         KEYBUF_ADDR = 0x0277,
         SCREEN_ADDR = 0x0400,
         COLOR_RAM = 0xD800,
-        RESET_VEC = 0xFFFC;
+        RESET_VEC = 0xFFFC,
+        SPRITE_BASE = 0xD000,
+        SPRITE_ENABLE = 0xD015,
+        SPRITE_X_EXPAND = 0xD01D,
+        SPRITE_Y_EXPAND = 0xD017,
+        SPRITE_MULTICOLOR = 0xD01C,
+        SPRITE_DATA_PTR = 0x07F8;
     const CYCLES_PER_FRAME = 16421; // PAL approximation
     const PALETTE = [0x000000, 0xFFFFFF, 0x68372B, 0x70A4B2, 0x6F3D86, 0x588D43, 0x352879, 0xB8C76F, 0x6F4F25, 0x433900, 0x9A6759, 0x444444, 0x6C6C6C, 0x9AD284, 0x6C5EB5, 0x959595];
 
@@ -905,6 +911,25 @@
             this.ram[0xD020] = 0x0E;  // Border color (light blue)
             this.ram[0xD021] = 0x06;  // Background color (blue)
             
+            // Initialize sprite registers
+            this.ram[0xD015] = 0x00;  // Sprite enable register (all disabled)
+            this.ram[0xD010] = 0x00;  // Sprites 0-7 X position MSB
+            this.ram[0xD017] = 0x00;  // Sprites 0-7 Y expand
+            this.ram[0xD01C] = 0x00;  // Sprites 0-7 multicolor mode
+            this.ram[0xD01D] = 0x00;  // Sprites 0-7 X expand
+            this.ram[0xD025] = 0x00;  // Sprite multicolor register 0
+            this.ram[0xD026] = 0x00;  // Sprite multicolor register 1
+            
+            // Initialize sprite colors (0xD027-0xD02E)
+            for (let i = 0; i < 8; i++) {
+                this.ram[0xD027 + i] = i + 1; // Default colors 1-8
+            }
+            
+            // Initialize sprite data pointers to safe values
+            for (let i = 0; i < 8; i++) {
+                this.ram[0x07F8 + i] = 0x00; // Point to memory location 0
+            }
+            
             // Set up basic system vectors that KERNAL expects
             // IRQ vector (normally points to KERNAL IRQ handler)
             this.ram[0x0314] = 0x31;  // IRQ low byte
@@ -1100,8 +1125,266 @@
                     }
                 }
             }
+
+            // Draw sprites
+            this.drawSprites(d, w, h, borderX, borderY, ram);
+            
             this.ctx.putImageData(img, 0, 0);
         }
+        
+        drawSprites(imageData, width, height, borderX, borderY, ram) {
+            const spriteEnable = ram[SPRITE_ENABLE];
+            const spriteXExpand = ram[SPRITE_X_EXPAND];
+            const spriteYExpand = ram[SPRITE_Y_EXPAND];
+            const spriteMulticolor = ram[SPRITE_MULTICOLOR];
+            
+            // Sprite multicolor registers
+            const spriteMulticolor0 = ram[0xD025] & 0x0F;
+            const spriteMulticolor1 = ram[0xD026] & 0x0F;
+            
+            for (let sprite = 0; sprite < 8; sprite++) {
+                if (!(spriteEnable & (1 << sprite))) continue;
+                
+                // Get sprite position
+                let spriteX = ram[0xD000 + sprite * 2] | ((ram[0xD010] & (1 << sprite)) ? 0x100 : 0);
+                let spriteY = ram[0xD001 + sprite * 2];
+                
+                // Get sprite data pointer (last 8 bytes of each 1K block of screen RAM)
+                const spritePtr = ram[SPRITE_DATA_PTR + sprite];
+                const spriteDataAddr = spritePtr * 64;
+                
+                // Get sprite color
+                const spriteColor = ram[0xD027 + sprite] & 0x0F;
+                
+                // Check if multicolor mode
+                const isMulticolor = spriteMulticolor & (1 << sprite);
+                
+                // Check expansion
+                const xExpand = spriteXExpand & (1 << sprite);
+                const yExpand = spriteYExpand & (1 << sprite);
+                
+                // Sprite is 24x21 pixels (3 bytes wide, 21 rows)
+                for (let row = 0; row < 21; row++) {
+                    const actualRow = yExpand ? Math.floor(row / 2) : row;
+                    
+                    for (let byteCol = 0; byteCol < 3; byteCol++) {
+                        const spriteDataByte = ram[spriteDataAddr + actualRow * 3 + byteCol];
+                        
+                        for (let bit = 0; bit < 8; bit++) {
+                            let pixelColor = 0;
+                            let drawPixel = false;
+                            
+                            if (isMulticolor) {
+                                // In multicolor mode, process 2 bits at a time (4 colors possible)
+                                if (bit % 2 === 0) {
+                                    const colorBits = (spriteDataByte >> (6 - bit)) & 0x03;
+                                    switch (colorBits) {
+                                        case 0: drawPixel = false; break; // Transparent
+                                        case 1: pixelColor = spriteMulticolor0; drawPixel = true; break;
+                                        case 2: pixelColor = spriteColor; drawPixel = true; break;
+                                        case 3: pixelColor = spriteMulticolor1; drawPixel = true; break;
+                                    }
+                                }
+                            } else {
+                                // Single color mode
+                                if (spriteDataByte & (0x80 >> bit)) {
+                                    pixelColor = spriteColor;
+                                    drawPixel = true;
+                                }
+                            }
+                            
+                            if (drawPixel) {
+                                const pixelStep = isMulticolor ? 2 : 1;
+                                const actualBit = isMulticolor ? Math.floor(bit / 2) * 2 : bit;
+                                
+                                for (let px = 0; px < pixelStep; px++) {
+                                    // Calculate sprite pixel position relative to sprite origin
+                                    let spritePxX = byteCol * 8 + actualBit + px;
+                                    let spritePxY = row;
+                                    
+                                    if (xExpand) {
+                                        spritePxX = (byteCol * 8 + actualBit + px) * 2;
+                                        // Draw expanded pixel (2x width)
+                                        for (let ex = 0; ex < 2; ex++) {
+                                            const finalSpritePxX = spritePxX + ex;
+                                            const finalSpritePxY = yExpand ? spritePxY * 2 : spritePxY;
+                                            
+                                            // Convert to screen coordinates (sprites positioned relative to entire screen)
+                                            const screenX = spriteX + finalSpritePxX;
+                                            const screenY = spriteY + finalSpritePxY;
+                                            
+                                            // Only draw if within the visible screen area (including border)
+                                            if (screenX >= 0 && screenX < width && screenY >= 0 && screenY < height) {
+                                                const offset = (screenY * width + screenX) << 2;
+                                                const color = PALETTE[pixelColor];
+                                                imageData[offset] = (color >> 16) & 255;
+                                                imageData[offset + 1] = (color >> 8) & 255;
+                                                imageData[offset + 2] = color & 255;
+                                            }
+                                        }
+                                        
+                                        // Handle Y expansion separately
+                                        if (yExpand) {
+                                            for (let ex = 0; ex < 2; ex++) {
+                                                const finalSpritePxX = spritePxX + ex;
+                                                const finalSpritePxY = spritePxY * 2 + 1; // Second Y line
+                                                
+                                                const screenX = spriteX + finalSpritePxX;
+                                                const screenY = spriteY + finalSpritePxY;
+                                                
+                                                if (screenX >= 0 && screenX < width && screenY >= 0 && screenY < height) {
+                                                    const offset = (screenY * width + screenX) << 2;
+                                                    const color = PALETTE[pixelColor];
+                                                    imageData[offset] = (color >> 16) & 255;
+                                                    imageData[offset + 1] = (color >> 8) & 255;
+                                                    imageData[offset + 2] = color & 255;
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        const finalSpritePxY = yExpand ? spritePxY * 2 : spritePxY;
+                                        
+                                        // Convert to screen coordinates
+                                        const screenX = spriteX + spritePxX;
+                                        const screenY = spriteY + finalSpritePxY;
+                                        
+                                        // Only draw if within the visible screen area
+                                        if (screenX >= 0 && screenX < width && screenY >= 0 && screenY < height) {
+                                            const offset = (screenY * width + screenX) << 2;
+                                            const color = PALETTE[pixelColor];
+                                            imageData[offset] = (color >> 16) & 255;
+                                            imageData[offset + 1] = (color >> 8) & 255;
+                                            imageData[offset + 2] = color & 255;
+                                        }
+                                        
+                                        // Handle Y expansion
+                                        if (yExpand) {
+                                            const expandedScreenY = spriteY + finalSpritePxY + 1;
+                                            if (screenX >= 0 && screenX < width && expandedScreenY >= 0 && expandedScreenY < height) {
+                                                const offset = (expandedScreenY * width + screenX) << 2;
+                                                const color = PALETTE[pixelColor];
+                                                imageData[offset] = (color >> 16) & 255;
+                                                imageData[offset + 1] = (color >> 8) & 255;
+                                                imageData[offset + 2] = color & 255;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Helper methods for sprite manipulation
+        enableSprite(spriteNum, enable = true) {
+            if (spriteNum < 0 || spriteNum > 7) return;
+            const currentEnable = this.machine.ram[SPRITE_ENABLE];
+            if (enable) {
+                this.machine.ram[SPRITE_ENABLE] = currentEnable | (1 << spriteNum);
+            } else {
+                this.machine.ram[SPRITE_ENABLE] = currentEnable & ~(1 << spriteNum);
+            }
+        }
+        
+        setSpritePosition(spriteNum, x, y) {
+            if (spriteNum < 0 || spriteNum > 7) return;
+            // Set X position (9-bit value, MSB in 0xD010)
+            this.machine.ram[0xD000 + spriteNum * 2] = x & 0xFF;
+            if (x > 255) {
+                this.machine.ram[0xD010] |= (1 << spriteNum);
+            } else {
+                this.machine.ram[0xD010] &= ~(1 << spriteNum);
+            }
+            // Set Y position
+            this.machine.ram[0xD001 + spriteNum * 2] = y & 0xFF;
+        }
+        
+        setSpriteColor(spriteNum, color) {
+            if (spriteNum < 0 || spriteNum > 7) return;
+            this.machine.ram[0xD027 + spriteNum] = color & 0x0F;
+        }
+        
+        setSpriteDataPointer(spriteNum, pointer) {
+            if (spriteNum < 0 || spriteNum > 7) return;
+            this.machine.ram[SPRITE_DATA_PTR + spriteNum] = pointer & 0xFF;
+        }
+        
+        setSpriteMulticolor(spriteNum, multicolor = true) {
+            if (spriteNum < 0 || spriteNum > 7) return;
+            const current = this.machine.ram[SPRITE_MULTICOLOR];
+            if (multicolor) {
+                this.machine.ram[SPRITE_MULTICOLOR] = current | (1 << spriteNum);
+            } else {
+                this.machine.ram[SPRITE_MULTICOLOR] = current & ~(1 << spriteNum);
+            }
+        }
+        
+        setSpriteExpand(spriteNum, expandX = false, expandY = false) {
+            if (spriteNum < 0 || spriteNum > 7) return;
+            const currentX = this.machine.ram[SPRITE_X_EXPAND];
+            const currentY = this.machine.ram[SPRITE_Y_EXPAND];
+            
+            if (expandX) {
+                this.machine.ram[SPRITE_X_EXPAND] = currentX | (1 << spriteNum);
+            } else {
+                this.machine.ram[SPRITE_X_EXPAND] = currentX & ~(1 << spriteNum);
+            }
+            
+            if (expandY) {
+                this.machine.ram[SPRITE_Y_EXPAND] = currentY | (1 << spriteNum);
+            } else {
+                this.machine.ram[SPRITE_Y_EXPAND] = currentY & ~(1 << spriteNum);
+            }
+        }
+        
+        // Load sprite data from a 24x21 pixel array (63 bytes)
+        loadSpriteData(pointer, spriteData) {
+            const addr = pointer * 64;
+            for (let i = 0; i < 63 && i < spriteData.length; i++) {
+                this.machine.ram[addr + i] = spriteData[i] & 0xFF;
+            }
+        }
+        
+        // Create a simple demo sprite (a smiley face)
+        createDemoSprite() {
+            const smileyData = [
+                0b00000000, 0b01111110, 0b00000000,  // Row 0
+                0b00000001, 0b11111111, 0b10000000,  // Row 1
+                0b00000011, 0b11111111, 0b11000000,  // Row 2
+                0b00000111, 0b11111111, 0b11100000,  // Row 3
+                0b00001111, 0b11111111, 0b11110000,  // Row 4
+                0b00011110, 0b01111110, 0b01111000,  // Row 5
+                0b00111100, 0b01111110, 0b00111100,  // Row 6
+                0b00111100, 0b01111110, 0b00111100,  // Row 7
+                0b01111000, 0b11111111, 0b00011110,  // Row 8
+                0b01111000, 0b11111111, 0b00011110,  // Row 9
+                0b11110001, 0b11111111, 0b10001111,  // Row 10
+                0b11110001, 0b11111111, 0b10001111,  // Row 11
+                0b11110000, 0b11111111, 0b00001111,  // Row 12
+                0b11110000, 0b11000011, 0b00001111,  // Row 13
+                0b01111001, 0b10000001, 0b10011110,  // Row 14
+                0b01111111, 0b00000000, 0b11111110,  // Row 15
+                0b00111111, 0b10000001, 0b11111100,  // Row 16
+                0b00011111, 0b11111111, 0b11111000,  // Row 17
+                0b00001111, 0b11111111, 0b11110000,  // Row 18
+                0b00000111, 0b11111111, 0b11100000,  // Row 19
+                0b00000001, 0b11111111, 0b10000000   // Row 20
+            ];
+            
+            // Load the sprite data at pointer 13 (safe location in upper memory)
+            this.loadSpriteData(13, smileyData);
+            
+            // Set up sprite 0 with the smiley
+            this.setSpriteDataPointer(0, 13);
+            this.setSpritePosition(0, 160, 120); // Center of visible area (accounting for borders)
+            this.setSpriteColor(0, 14); // Light blue
+            this.enableSprite(0, true);
+            
+            console.log('Demo sprite created: smiley face at position (100, 100)');
+        }
+        
         handleKeyPress(e) {
             let code = 0;
             const k = e.key;
