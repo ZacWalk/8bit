@@ -869,6 +869,14 @@
                 this.pc = this.read16(0xFFFE);
             }
         }
+        // Force a BRK-like break (used for RUN/STOP approximation)
+        forceBreak() {
+            // Emulate BRK mechanics similar to opcode 0x00 handling
+            this.push16(this.pc);
+            this.push(this.status | FLAG_BREAK);
+            this.setF(FLAG_INTERRUPT, true);
+            this.pc = this.read16(0xFFFE);
+        }
     }
 
     class C64Machine {
@@ -974,11 +982,18 @@
             this.canvas = document.getElementById(id);
             this.ctx = this.canvas.getContext('2d');
             this.ctx.imageSmoothingEnabled = false;
-            this.scale = 2; // Adjusted scale for larger canvas
+            this.scale = 2; // Base scale factor (vertical reference)
+            // Internal (logical) resolution includes border: 384x272
             this.canvas.width = 384;
             this.canvas.height = 272;
-            this.canvas.style.width = (this.canvas.width * this.scale) + "px";
-            this.canvas.style.height = (this.canvas.height * this.scale) + "px";
+            // Correct to 4:3 display like original CRT (C64 pixels are slightly taller than wide)
+            // We keep vertical scale exact and adjust horizontal to achieve overall 4:3 aspect.
+            const displayHeight = this.canvas.height * this.scale; // e.g. 272 * 2 = 544px
+            const targetAspect = 4 / 3; // Desired outer aspect ratio
+            const displayWidth = Math.round(displayHeight * targetAspect); // width derived from height
+            this.canvas.style.height = displayHeight + "px";
+            this.canvas.style.width = displayWidth + "px";
+            this.canvas.style.maxWidth = displayWidth + "px"; // prevent wider CSS overrides
             this.machine = new C64Machine();
             this.frame = 0;
             this.running = false;
@@ -1003,6 +1018,10 @@
         }
         stop() {
             this.running = false;
+        }
+        breakExecution() {
+            // Request a CPU break (approximate RUN/STOP); BASIC will typically handle via its IRQ loop
+            try { this.machine.cpu.forceBreak(); } catch(e) { /* ignore */ }
         }
         loop() {
             if (!this.running) return;
@@ -1100,11 +1119,23 @@
         typeText(t) {
             let z = 0;
             for (const ch of t) {
-                setTimeout(() => this.handleKeyPress({
-                    key: ch,
-                    preventDefault: () => {}
-                }), z);
-                z += 50;
+                if (ch === '\r') {
+                    // Normalize CR to LF handling; skip explicit processing, will be handled by LF branch
+                    continue;
+                }
+                if (ch === '\n') {
+                    setTimeout(() => this.handleKeyPress({
+                        key: 'Enter',
+                        preventDefault: () => {}
+                    }), z);
+                    z += 70; // slightly longer pause after a line
+                } else {
+                    setTimeout(() => this.handleKeyPress({
+                        key: ch,
+                        preventDefault: () => {}
+                    }), z);
+                    z += 30;
+                }
             }
         }
         snapshot() {

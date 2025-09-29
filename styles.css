@@ -94,8 +94,8 @@ body.has-c64-layout {
     border-radius: 8px;
     image-rendering: pixelated;
     width: 100%;
-    max-width: 480px;
-    aspect-ratio: 384 / 272;
+    max-width: 540px; /* allow a bit wider since width now derived from height in JS */
+    aspect-ratio: 4 / 3; /* enforce classic 4:3 TV aspect ratio */
     box-shadow: 0 0 20px rgba(0,0,0,0.7);
 }
 .c64-controls {

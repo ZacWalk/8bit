@@ -63,9 +63,33 @@
                 case 'new': emu.typeText('NEW\n'); break;
                 case 'list': emu.typeText('LIST\n'); break;
                 case 'run': emu.typeText('RUN\n'); break;
-                case 'stop': /* emulate RUN/STOP: send STOP (RUN/STOP isn't implemented; send RESTORE?) */ emu.typeText(String.fromCharCode(3)); break;
+                case 'stop': // Approximate RUN/STOP: trigger a forced CPU break/IRQ
+                    if (typeof emu.breakExecution === 'function') {
+                        emu.breakExecution();
+                    } else {
+                        emu.typeText(String.fromCharCode(3)); // fallback
+                    }
+                    break;
             }
         });
+    }
+
+    // Determine whether a code snippet is likely to be runnable C64 BASIC
+    // Heuristics:
+    // 1. Contains at least one line that starts with a BASIC line number (e.g. 10 PRINT "HI")
+    // 2. OR first non-empty line begins with a recognized immediate BASIC keyword (PRINT, POKE, SYS, etc.)
+    // 3. Ignore pure output dumps (e.g., the power-on banner) and non-BASIC examples
+    function isC64Runnable(codeText) {
+        if (!codeText) return false;
+        const lines = codeText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        if (!lines.length) return false;
+        // Line-numbered program?
+        if (lines.some(l => /^\d{1,5}\s+/.test(l))) return true;
+        // Single / small immediate command? (allow a couple of lines for multi-line direct entry)
+        const first = lines[0].toUpperCase();
+        const immediateKeywords = /^(PRINT|POKE|SYS|LOAD|RUN|LIST|NEW|FOR|IF|GOTO|GOSUB|REM)\b/;
+        if (lines.length <= 4 && immediateKeywords.test(first)) return true;
+        return false;
     }
 
     function enhanceCodeBlocks(root=document) {
@@ -74,12 +98,14 @@
             if (pre.classList.contains('c64-enhanced')) return;
             const codeEl = pre.querySelector('code');
             if (!codeEl) return;
+            const codeText = codeEl.innerText || '';
+            if (!isC64Runnable(codeText)) return; // Skip adding button if not runnable BASIC
             pre.classList.add('c64-enhanced','c64-run-wrapper');
             const btn = document.createElement('button');
             btn.textContent = 'Run on C64';
             btn.type = 'button';
             btn.className = 'run-c64-btn';
-            btn.addEventListener('click', () => runCodeOnC64(codeEl.innerText));
+            btn.addEventListener('click', () => runCodeOnC64(codeText));
             pre.appendChild(btn);
         });
     }
