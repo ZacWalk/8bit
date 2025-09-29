@@ -7,25 +7,32 @@
     function ensureLayout() {
         if (document.body.classList.contains('has-c64-layout')) return;
         document.body.classList.add('has-c64-layout');
-        // Wrap original content
-        const original = document.createElement('div');
-        original.id = CONTENT_ID;
-        // Move current body children into dynamic content (will be replaced if SPA navigates)
-        const toMove = Array.from(document.body.childNodes).filter(n => !(n.id === 'c64-emulator-pane'));
-        toMove.forEach(n => original.appendChild(n));
-
-        // Create panes
-        const emulatorPane = document.createElement('div');
-        emulatorPane.id = 'c64-emulator-pane';
-        emulatorPane.innerHTML = `\n            <h1>COMMODORE 64</h1>\n            <div id="c64-emulator-wrapper">\n                <canvas id="${EMU_ID}" width="384" height="272"></canvas>\n                <div class="c64-controls">\n                    <button data-c64-action="reset">RESET</button>\n                    <button data-c64-action="new">NEW</button>\n                    <button data-c64-action="list">LIST</button>\n                    <button data-c64-action="run">RUN</button>\n                    <button data-c64-action="stop">STOP (RUN/STOP)</button>\n                </div>\n                <div class="c64-inline-note">State persists while you stay on this tab.</div>\n            </div>`;
-
-        const contentPane = document.createElement('div');
-        contentPane.id = PANE_ID;
-        contentPane.appendChild(original);
-
-        document.body.innerHTML = ''; // clear
-        document.body.appendChild(emulatorPane);
-        document.body.appendChild(contentPane);
+        
+        // Check if an embedded index emulator exists (it should since we're keeping it embedded)
+        let existingEmbedded = document.getElementById('embedded-c64-screen');
+        let emulatorPane = document.getElementById('c64-emulator-pane');
+        let contentPane = document.getElementById(PANE_ID);
+        
+        if (existingEmbedded && emulatorPane) {
+            // Rename canvas id to standard EMU_ID for emulator compatibility
+            existingEmbedded.id = EMU_ID;
+            // Convert button attributes from data-embed-action to data-c64-action
+            emulatorPane.querySelectorAll('[data-embed-action]').forEach(btn => {
+                const act = btn.getAttribute('data-embed-action');
+                btn.setAttribute('data-c64-action', act);
+                btn.removeAttribute('data-embed-action');
+            });
+        }
+        
+        // The emulator pane and content pane should already exist in the embedded HTML
+        // Just ensure they have the proper structure
+        if (!emulatorPane) {
+            console.warn('Emulator pane not found - the embedded structure may be incorrect');
+        }
+        
+        if (!contentPane) {
+            console.warn('Content pane not found - the embedded structure may be incorrect');
+        }
     }
 
     function initEmulator() {
@@ -51,27 +58,41 @@
 
     function setupControlButtons() {
         const pane = document.getElementById('c64-emulator-pane');
-        if (!pane) return;
-        pane.addEventListener('click', e => {
-            const target = e.target.closest('button[data-c64-action]');
-            if (!target) return;
-            const action = target.getAttribute('data-c64-action');
-            const emu = window.c64Emu;
-            if (!emu) return;
-            switch(action) {
-                case 'reset': emu.reset(); break;
-                case 'new': emu.typeText('NEW\n'); break;
-                case 'list': emu.typeText('LIST\n'); break;
-                case 'run': emu.typeText('RUN\n'); break;
-                case 'stop': // Approximate RUN/STOP: trigger a forced CPU break/IRQ
-                    if (typeof emu.breakExecution === 'function') {
-                        emu.breakExecution();
-                    } else {
-                        emu.typeText(String.fromCharCode(3)); // fallback
-                    }
-                    break;
-            }
-        });
+        if (!pane) {
+            console.warn('Emulator pane not found for control setup');
+            return;
+        }
+        
+        // Remove any existing listeners to avoid duplicates
+        pane.removeEventListener('click', handleControlClick);
+        pane.addEventListener('click', handleControlClick);
+    }
+
+    function handleControlClick(e) {
+        const target = e.target.closest('button[data-c64-action], button[data-embed-action]');
+        if (!target) return;
+        
+        // Support both data-c64-action and data-embed-action attributes
+        const action = target.getAttribute('data-c64-action') || target.getAttribute('data-embed-action');
+        const emu = window.c64Emu;
+        if (!emu) {
+            console.warn('Emulator not initialized yet');
+            return;
+        }
+        
+        switch(action) {
+            case 'reset': emu.reset(); break;
+            case 'new': emu.typeText('NEW\n'); break;
+            case 'list': emu.typeText('LIST\n'); break;
+            case 'run': emu.typeText('RUN\n'); break;
+            case 'stop': // Approximate RUN/STOP: trigger a forced CPU break/IRQ
+                if (typeof emu.breakExecution === 'function') {
+                    emu.breakExecution();
+                } else {
+                    emu.typeText(String.fromCharCode(3)); // fallback
+                }
+                break;
+        }
     }
 
     // Determine whether a code snippet is likely to be runnable C64 BASIC
@@ -124,18 +145,23 @@
         }
     }
 
-    function interceptLinks() {
-        // If opened directly from filesystem, skip SPA to avoid fetch(file://) CORS issues
-        if (location.protocol === 'file:') return;
-        document.addEventListener('click', e => {
-            const a = e.target.closest('a');
-            if (!a) return;
+    // Set up navigation for the Table of Contents links on the index page
+    function setupIndexNavigation() {
+        // Determine if current page is the index (supports /, /index.html)
+        const path = location.pathname.split('/').pop();
+        if (path && path.length && path !== 'index.html') return; // not index
+        
+        const tocLinks = document.querySelectorAll('a[href$=".html"]');
+        tocLinks.forEach(a => {
             const href = a.getAttribute('href');
-            if (!href) return;
-            if (/^(chapter\d+|appendices)\.html$/i.test(href) || href === 'index.html') {
+            if (!/^(chapter\d+|appendices)\.html$/i.test(href)) return;
+            
+            a.addEventListener('click', e => {
                 e.preventDefault();
+                
+                // Always try to load content into the right panel first
                 loadChapter(href, { fallbackNavigate: true });
-            }
+            }, { passive: false });
         });
     }
 
@@ -143,35 +169,78 @@
 
     async function loadChapter(file, opts={}) {
         const content = document.getElementById(CONTENT_ID);
-        if (!content) return;
+        if (!content) {
+            console.warn('Content pane not found - ensure the embedded layout includes #c64-dynamic-content');
+            return;
+        }
+        
+        // Ensure layout is maintained
+        ensureLayout();
+        
         if (cache.has(file)) {
             content.innerHTML = cache.get(file);
             enhanceCodeBlocks(content);
             window.history.pushState({file}, '', '#' + file.replace('.html',''));
             return;
         }
+        
         try {
             const res = await fetch(file, {cache:'force-cache'});
             const html = await res.text();
             const frag = document.createElement('div');
             frag.innerHTML = html;
-            // Try to extract main container
-            let main = frag.querySelector('.container');
-            if (!main) main = frag.querySelector('body') || frag;
-            const title = frag.querySelector('h1,h2');
-            if (title) document.title = title.textContent + ' - C64 Guide';
-            const extracted = main.innerHTML;
-            cache.set(file, extracted);
-            content.innerHTML = extracted;
+            
+            // Extract only the meaningful content from the chapter file
+            // Look for the main container elements that contain the chapter content
+            const containers = Array.from(frag.querySelectorAll('.container'));
+            let extractedContent = '';
+            
+            if (containers.length > 0) {
+                // If we have containers, extract them all
+                containers.forEach(container => {
+                    extractedContent += container.outerHTML;
+                });
+            } else {
+                // Fallback: extract body content but skip emulator and script elements
+                const body = frag.querySelector('body');
+                if (body) {
+                    Array.from(body.children).forEach(child => {
+                        // Skip emulator pane, script tags, and head elements
+                        if (child.id !== 'c64-emulator-pane' && 
+                            child.tagName !== 'SCRIPT' && 
+                            child.tagName !== 'HEAD') {
+                            extractedContent += child.outerHTML;
+                        }
+                    });
+                }
+            }
+            
+            // Update page title if we find one
+            const title = frag.querySelector('h1, h2, title');
+            if (title) {
+                document.title = title.textContent + ' - C64 Guide';
+            }
+            
+            // Cache and display the content
+            cache.set(file, extractedContent);
+            content.innerHTML = extractedContent;
             enhanceCodeBlocks(content);
             window.history.pushState({file}, '', '#' + file.replace('.html',''));
+            
         } catch (err) {
-            if (opts.fallbackNavigate) {
-                // As a fallback (e.g., file:// or blocked fetch), perform normal navigation
-                window.location.href = file;
-            } else {
-                content.innerHTML = '<p style="color:red">Failed to load chapter: '+file+'</p>';
-            }
+            console.warn('Failed to load chapter via fetch:', err);
+            
+            // For file:// protocol or fetch failures, show navigation message
+            content.innerHTML = `
+                <div class="p-8">
+                    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+                        <p><strong>Note:</strong> Unable to load chapter content dynamically.</p>
+                        <p class="mt-2">For the best experience, serve this site via HTTP using:</p>
+                        <p><code class="bg-gray-200 px-2 py-1 rounded">python -m http.server 8000</code></p>
+                    </div>
+                    <p><a href="${file}" class="text-blue-600 hover:underline" target="_blank">Click here to view ${file} in a new tab</a></p>
+                </div>
+            `;
         }
     }
 
@@ -189,12 +258,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         ensureLayout();
         initEmulator();
-        interceptLinks();
+        setupIndexNavigation();
         enhanceCodeBlocks();
         restoreFromHash();
 
         if (location.protocol === 'file:') {
-            console.info('[C64 Guide] Running from file://; SPA chapter loading disabled. For persistent emulator across chapters, serve via a local HTTP server (e.g., "npx serve" or "python -m http.server").');
+            console.info('[C64 Guide] Running from file://. For best performance, serve via HTTP server (e.g., "npx serve" or "python -m http.server").');
         }
     });
 })();

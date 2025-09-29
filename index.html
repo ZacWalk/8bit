@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,42 +12,140 @@
     <script defer src="c64.js"></script>
     <script defer src="app.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800">
 
-    <div class="c64-dark-blue text-white p-8 text-center">
-        <h1 class="text-4xl font-bold">COMMODORE 64</h1>
-        <h2 class="text-2xl">USER'S GUIDE</h2>
-    </div>
-    <div class="container mx-auto p-8 max-w-4xl">
-        <div class="bg-white p-8 rounded-lg shadow-lg">
-            <h3 class="text-2xl font-bold mb-6 text-center c64-blue">Table of Contents</h3>
-            <ul class="space-y-4">
-                <li><a href="chapter1.html" class="text-lg c64-light-blue hover:underline">Chapter 1: Setup</a></li>
-                <li><a href="chapter2.html" class="text-lg c64-light-blue hover:underline">Chapter 2: Getting Started</a></li>
-                <li><a href="chapter3.html" class="text-lg c64-light-blue hover:underline">Chapter 3: Beginning BASIC Programming</a></li>
-                <li><a href="chapter4.html" class="text-lg c64-light-blue hover:underline">Chapter 4: Advanced BASIC</a></li>
-                <li><a href="chapter5.html" class="text-lg c64-light-blue hover:underline">Chapter 5: Advanced Color and Graphic Commands</a></li>
-                <li><a href="chapter6.html" class="text-lg c64-light-blue hover:underline">Chapter 6: Sprite Graphics</a></li>
-                <li><a href="chapter7.html" class="text-lg c64-light-blue hover:underline">Chapter 7: Creating Sound</a></li>
-                <li><a href="appendices.html" class="text-lg c64-light-blue hover:underline">Appendices</a></li>
-            </ul>
-        </div>
-        <div class="mt-8 p-8 bg-white rounded-lg shadow-lg">
-            <h3 class="text-2xl font-bold mb-4 c64-blue">Introduction</h3>
-            <p class="mb-4">Congratulations, on your purchase of one of the best computers in the world. You are now the proud owner of the COMMODORE 64. Commodore is known as The Friendly Computer company, and part of being friendly is giving you easy to read, easy to use and easy to understand instruction manuals. The COMMODORE 64 USER'S GUIDE is designed to give you all the information you need to properly set up your equipment, get acquainted with operating the COMMODORE 64, and give you a simple, fun start at learning to make your own programs.</p>
-            <p class="mb-4">For those of you who don't want to bother learning how to program, we've put all the information you need to use Commodore programs or other prepackaged programs and/or game cartridges (third party software) right up front. This means you don't have to hunt through the entire book to get started.</p>
-            <p class="mb-4">Now let's look at some of the exciting features that are just waiting for you inside your COMMODORE 64. First, when it comes to graphics you've got the most advanced picture maker in the microcomputer industry. We call it SPRITE GRAPHICS, and it allows you to design your own pictures in 4 different colors, just like the ones you see on arcade type video games. Not only that, the SPRITE EDITOR let's you animate as many as 8 different picture levels at one time. The SPRITE EDITOR will soon be available as a software program that you can load directly into your COMMODORE 64. You can move your creations anywhere on the screen, even pass one image in front of or behind another. Your COMMODORE 64 even provides automatic collision detection which instructs the computer to take the action you want when the sprites hit each other.</p>
-            <p class="mb-4">Next, the COMMODORE 64 has built-in music and sound effects that rival many well known music synthesizers. This part of your computer gives you 3 independent voices, each with a full 9 octave "piano-type" range. In addition you get 4 different waveforms (sawtooth, triangle, variable pulse, and noise), a programmable ADSR (attack, decay, sustain, release) envelope generator and a programmable high, low, and bandpass filter for the voices, and variable resonance and volume controls. If you want your music to play back with professional sound reproduction, the COMMODORE 64 allows you to connect your audio output to almost any high-quality amplification system.</p>
-            <p class="mb-4">While we're on the subject of connecting the COMMODORE 64 to other pieces of equipment your system can be expanded by adding accessories, known as peripherals, as your computing needs grow. Some of your options include items like a DATASSETTE* recorder or as many as 5, VIC 1541 disk drive storage units for the programs you make and/or play. If you already have a VIC 1540 disk drive your dealer can update it for use with the COMMODORE 64. You can add a VIC dot matrix printer to give you printed copies of your programs, letters, invoices, etc... If you want to connect up with larger computers and their massive data bases then just plug in a VICMODEM cartridge, and get the services of hundreds of specialists and a variety of information networks through your home or business telephone. Finally if you're one of those people interested in the wide variety of applications software available in CP/M**, the COMMODORE 64 can be fitted with a plug-in Z-80 microprocessor.</p>
-            <p class="mb-4">Just as important as all the available hardware is the fact that this USER'S GUIDE will help you develop your understanding of computers. It won't tell you everything there is to know about computers, but it will refer you to a wide variety of publications for more detailed information about the topics presented. Commodore wants you to really enjoy your new COMMODORE 64. And to have fun, remember: programming is not the kind of thing you can learn in a day. Be patient with yourself as you go through the USER'S GUIDE. But before you start, take a few minutes to fill out and mail in the owner/registration card that came with your computer. It will ensure that your COMMODORE 64 is properly registered with Commodore Headquarters and that you receive the most up-to-date information regarding future enhancements for your machine. Welcome to a whole new world of fun!!</p>
-            <div class="mt-6 text-sm text-gray-600">
-                <p class="mb-2"><strong>NOTE:</strong> Many programs are under development while this manual is being produced. Please check with your local Commodore dealer and with Commodore User's Magazines and Clubs, which will keep you up to date on the wealth of applications programs being written for the Commodore 64, worldwide.</p>
-                <p class="mb-1">*DATASSETTE is a registered trademark of Commodore Business Machines, Inc.</p>
-                <p>** CP/M is a registered trademark of Digital Research Inc. Specifications subject to change.</p>
+<body class="c64-dark-blue text-gray-800">
+    <!-- Emulator Pane (Left 50%) -->
+    <div id="c64-emulator-pane">
+        <h1>COMMODORE 64 EMULATOR</h1>
+        <div id="c64-emulator-wrapper">
+            <canvas id="embedded-c64-screen" width="320" height="200"
+                style="background:#4040b0; image-rendering:pixelated; image-rendering:crisp-edges;"></canvas>
+            <div class="c64-controls">
+                <button data-embed-action="reset">RESET</button>
+                <button data-embed-action="new">NEW</button>
+                <button data-embed-action="list">LIST</button>
+                <button data-embed-action="run">RUN</button>
+                <button data-embed-action="stop">STOP</button>
+            </div>
+            <div class="c64-inline-note">
+                Type directly like on a real C64. Try: PRINT "HELLO WORLD"
             </div>
         </div>
     </div>
 
+    <!-- Content Pane (Right 50%) -->
+    <div id="c64-content-pane" class="c64-dark-blue">
+        <div id="c64-dynamic-content">
+            <div class="c64-dark-blue text-white p-8 text-center">
+                <h1 class="text-4xl font-bold">COMMODORE 64</h1>
+                <h2 class="text-2xl">USER'S GUIDE</h2>
+            </div>
+            <div class="container mx-auto p-8 max-w-4xl">
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-6 text-center c64-blue">Table of Contents</h3>
+                    <ul class="space-y-4">
+                        <li><a href="chapter1.html" class="text-lg c64-light-blue hover:underline">Chapter 1: Setup</a>
+                        </li>
+                        <li><a href="chapter2.html" class="text-lg c64-light-blue hover:underline">Chapter 2: Getting
+                                Started</a></li>
+                        <li><a href="chapter3.html" class="text-lg c64-light-blue hover:underline">Chapter 3: Beginning
+                                BASIC Programming</a></li>
+                        <li><a href="chapter4.html" class="text-lg c64-light-blue hover:underline">Chapter 4: Advanced
+                                BASIC</a></li>
+                        <li><a href="chapter5.html" class="text-lg c64-light-blue hover:underline">Chapter 5: Advanced
+                                Color
+                                and Graphic Commands</a></li>
+                        <li><a href="chapter6.html" class="text-lg c64-light-blue hover:underline">Chapter 6: Sprite
+                                Graphics</a></li>
+                        <li><a href="chapter7.html" class="text-lg c64-light-blue hover:underline">Chapter 7: Creating
+                                Sound</a></li>
+                        <li><a href="appendices.html" class="text-lg c64-light-blue hover:underline">Appendices</a></li>
+                    </ul>
+                </div>
+                <div class="mt-8 p-8 bg-white rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 c64-blue">Introduction</h3>
+                    <p class="mb-4">Congratulations, on your purchase of one of the best computers in the world. You are
+                        now
+                        the proud owner of the COMMODORE 64. Commodore is known as The Friendly Computer company, and
+                        part
+                        of being friendly is giving you easy to read, easy to use and easy to understand instruction
+                        manuals. The COMMODORE 64 USER'S GUIDE is designed to give you all the information you need to
+                        properly set up your equipment, get acquainted with operating the COMMODORE 64, and give you a
+                        simple, fun start at learning to make your own programs.</p>
+                    <p class="mb-4">For those of you who don't want to bother learning how to program, we've put all the
+                        information you need to use Commodore programs or other prepackaged programs and/or game
+                        cartridges
+                        (third party software) right up front. This means you don't have to hunt through the entire book
+                        to
+                        get started.</p>
+                    <p class="mb-4">Now let's look at some of the exciting features that are just waiting for you inside
+                        your COMMODORE 64. First, when it comes to graphics you've got the most advanced picture maker
+                        in
+                        the microcomputer industry. We call it SPRITE GRAPHICS, and it allows you to design your own
+                        pictures in 4 different colors, just like the ones you see on arcade type video games. Not only
+                        that, the SPRITE EDITOR let's you animate as many as 8 different picture levels at one time. The
+                        SPRITE EDITOR will soon be available as a software program that you can load directly into your
+                        COMMODORE 64. You can move your creations anywhere on the screen, even pass one image in front
+                        of or
+                        behind another. Your COMMODORE 64 even provides automatic collision detection which instructs
+                        the
+                        computer to take the action you want when the sprites hit each other.</p>
+                    <p class="mb-4">Next, the COMMODORE 64 has built-in music and sound effects that rival many well
+                        known
+                        music synthesizers. This part of your computer gives you 3 independent voices, each with a full
+                        9
+                        octave "piano-type" range. In addition you get 4 different waveforms (sawtooth, triangle,
+                        variable
+                        pulse, and noise), a programmable ADSR (attack, decay, sustain, release) envelope generator and
+                        a
+                        programmable high, low, and bandpass filter for the voices, and variable resonance and volume
+                        controls. If you want your music to play back with professional sound reproduction, the
+                        COMMODORE 64
+                        allows you to connect your audio output to almost any high-quality amplification system.</p>
+                    <p class="mb-4">While we're on the subject of connecting the COMMODORE 64 to other pieces of
+                        equipment
+                        your system can be expanded by adding accessories, known as peripherals, as your computing needs
+                        grow. Some of your options include items like a DATASSETTE* recorder or as many as 5, VIC 1541
+                        disk
+                        drive storage units for the programs you make and/or play. If you already have a VIC 1540 disk
+                        drive
+                        your dealer can update it for use with the COMMODORE 64. You can add a VIC dot matrix printer to
+                        give you printed copies of your programs, letters, invoices, etc... If you want to connect up
+                        with
+                        larger computers and their massive data bases then just plug in a VICMODEM cartridge, and get
+                        the
+                        services of hundreds of specialists and a variety of information networks through your home or
+                        business telephone. Finally if you're one of those people interested in the wide variety of
+                        applications software available in CP/M**, the COMMODORE 64 can be fitted with a plug-in Z-80
+                        microprocessor.</p>
+                    <p class="mb-4">Just as important as all the available hardware is the fact that this USER'S GUIDE
+                        will
+                        help you develop your understanding of computers. It won't tell you everything there is to know
+                        about computers, but it will refer you to a wide variety of publications for more detailed
+                        information about the topics presented. Commodore wants you to really enjoy your new COMMODORE
+                        64.
+                        And to have fun, remember: programming is not the kind of thing you can learn in a day. Be
+                        patient
+                        with yourself as you go through the USER'S GUIDE. But before you start, take a few minutes to
+                        fill
+                        out and mail in the owner/registration card that came with your computer. It will ensure that
+                        your
+                        COMMODORE 64 is properly registered with Commodore Headquarters and that you receive the most
+                        up-to-date information regarding future enhancements for your machine. Welcome to a whole new
+                        world
+                        of fun!!</p>
+                    <div class="mt-6 text-sm text-gray-600">
+                        <p class="mb-2"><strong>NOTE:</strong> Many programs are under development while this manual is
+                            being produced. Please check with your local Commodore dealer and with Commodore User's
+                            Magazines and Clubs, which will keep you up to date on the wealth of applications programs
+                            being
+                            written for the Commodore 64, worldwide.</p>
+                        <p class="mb-1">*DATASSETTE is a registered trademark of Commodore Business Machines, Inc.</p>
+                        <p>** CP/M is a registered trademark of Digital Research Inc. Specifications subject to change.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
 </body>
 </html>
-

@@ -129,7 +129,7 @@ body.has-c64-layout {
     height: 100vh;
     overflow-y: auto;
     box-sizing: border-box;
-    background: #f5f7fa;
+    background: #352879;
 }
 #c64-dynamic-content {
     padding: 20px 4vw 60px;
