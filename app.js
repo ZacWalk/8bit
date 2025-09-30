@@ -5,33 +5,30 @@
     const PANE_ID = 'c64-content-pane';
 
     function ensureLayout() {
+        // Only apply the fixed split layout if BOTH panes exist.
+        // Previously we always added the layout class which sets body { overflow:hidden }.
+        // On chapter pages loaded directly (without the emulator markup) this prevented scrolling so images
+        // further down the page appeared to be "missing". We now guard against that.
         if (document.body.classList.contains('has-c64-layout')) return;
+
+        const emulatorPane = document.getElementById('c64-emulator-pane');
+        const contentPane = document.getElementById(PANE_ID);
+        const existingEmbedded = document.getElementById('embedded-c64-screen');
+
+        if (!(emulatorPane && contentPane)) {
+            // Do NOT force layout; allow normal document flow & scrolling so images/content remain visible.
+            return;
+        }
+
         document.body.classList.add('has-c64-layout');
-        
-        // Check if an embedded index emulator exists (it should since we're keeping it embedded)
-        let existingEmbedded = document.getElementById('embedded-c64-screen');
-        let emulatorPane = document.getElementById('c64-emulator-pane');
-        let contentPane = document.getElementById(PANE_ID);
-        
-        if (existingEmbedded && emulatorPane) {
-            // Rename canvas id to standard EMU_ID for emulator compatibility
-            existingEmbedded.id = EMU_ID;
-            // Convert button attributes from data-embed-action to data-c64-action
+
+        if (existingEmbedded) {
+            existingEmbedded.id = EMU_ID; // normalize id for emulator
             emulatorPane.querySelectorAll('[data-embed-action]').forEach(btn => {
                 const act = btn.getAttribute('data-embed-action');
                 btn.setAttribute('data-c64-action', act);
                 btn.removeAttribute('data-embed-action');
             });
-        }
-        
-        // The emulator pane and content pane should already exist in the embedded HTML
-        // Just ensure they have the proper structure
-        if (!emulatorPane) {
-            console.warn('Emulator pane not found - the embedded structure may be incorrect');
-        }
-        
-        if (!contentPane) {
-            console.warn('Content pane not found - the embedded structure may be incorrect');
         }
     }
 
@@ -150,6 +147,14 @@
         // Determine if current page is the index (supports /, /index.html)
         const path = location.pathname.split('/').pop();
         if (path && path.length && path !== 'index.html') return; // not index
+
+        // If we're running from file:// protocol, dynamic fetch() of sibling HTML files will fail
+        // on most Chromium-based browsers due to CORS/security restrictions. In that case, skip
+        // the SPA interception so normal full-page navigation occurs and images/content appear.
+        if (location.protocol === 'file:') {
+            console.info('[C64 Guide] file:// detected - disabling dynamic chapter loading so images render.');
+            return;
+        }
         
         const tocLinks = document.querySelectorAll('a[href$=".html"]');
         tocLinks.forEach(a => {
@@ -167,6 +172,29 @@
 
     const cache = new Map();
 
+    function fixImagePaths(container) {
+        // When loading content dynamically, relative image paths might not resolve correctly
+        // This function ensures all image paths are resolved relative to the root
+        const images = container.querySelectorAll('img[src^="images/"]');
+        images.forEach(img => {
+            const src = img.getAttribute('src');
+            // If the path is already absolute or starts with /, skip
+            if (!src.startsWith('/') && !src.startsWith('http')) {
+                // Ensure the path is relative to the site root
+                img.setAttribute('src', './' + src);
+            }
+            
+            // Add error handling for failed image loads
+            img.addEventListener('error', function(e) {
+                console.warn('Failed to load image:', e.target.src);
+                // Try alternative path without ./ prefix
+                if (e.target.src.includes('./images/')) {
+                    e.target.src = e.target.src.replace('./images/', 'images/');
+                }
+            }, { once: true });
+        });
+    }
+
     async function loadChapter(file, opts={}) {
         const content = document.getElementById(CONTENT_ID);
         if (!content) {
@@ -176,16 +204,32 @@
         
         // Ensure layout is maintained
         ensureLayout();
+
+        // If on file protocol, bail out to normal navigation so that the browser loads the chapter directly.
+        if (location.protocol === 'file:') {
+            if (opts.fallbackNavigate) {
+                location.href = file;
+            } else {
+                window.open(file, '_self');
+            }
+            return;
+        }
         
-        if (cache.has(file)) {
+        const isLocalDev = ['localhost','127.0.0.1',''].includes(location.hostname); // '' for some file:// edge cases
+
+        if (cache.has(file) && !isLocalDev) {
+            // Use cached HTML only in production / non-local to avoid stale dev edits
             content.innerHTML = cache.get(file);
+            fixImagePaths(content);
             enhanceCodeBlocks(content);
             window.history.pushState({file}, '', '#' + file.replace('.html',''));
             return;
         }
         
         try {
-            const res = await fetch(file, {cache:'force-cache'});
+            // Adaptive caching strategy: avoid aggressive caching during local development
+            const cacheMode = isLocalDev ? 'no-cache' : 'force-cache';
+            const res = await fetch(file, { cache: cacheMode });
             const html = await res.text();
             const frag = document.createElement('div');
             frag.innerHTML = html;
@@ -222,8 +266,14 @@
             }
             
             // Cache and display the content
-            cache.set(file, extractedContent);
+            if (!isLocalDev) {
+                cache.set(file, extractedContent);
+            }
             content.innerHTML = extractedContent;
+            
+            // Fix image paths after loading content
+            fixImagePaths(content);
+            
             enhanceCodeBlocks(content);
             window.history.pushState({file}, '', '#' + file.replace('.html',''));
             

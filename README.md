@@ -2,6 +2,8 @@
 
 A pure JavaScript Commodore 64 emulator embedded alongside chapters of the classic user's guide. Read on the right, experiment instantly on the left.
 
+![Demo](screen-recording.gif)
+
 ## Try it out
 
 Visit: https://zacwalk.github.io/8bit/
